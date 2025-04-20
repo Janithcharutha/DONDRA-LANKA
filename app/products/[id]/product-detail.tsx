@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useToast } from "@/components/ui/use-toast"
 import type { Product } from '@/types/product'
+import CategorySection from "@/components/category-section"
 
 export default function ProductDetail({ id }: { id: string }) {
   const router = useRouter()
@@ -267,6 +268,20 @@ export default function ProductDetail({ id }: { id: string }) {
           )}
         </div>
       </div>
+
+      {/* Category Sections */}
+      <CategorySection 
+        category="sour-fish-curry" 
+        title="SOUR FISH CURRY" 
+      />
+      <CategorySection 
+        category="sri-lanka-spices" 
+        title="SRI LANKA SPICES" 
+      />
+      <CategorySection 
+        category="dry-fish" 
+        title="DRY FISH" 
+      />
 
       {/* Related Products */}
       {relatedProducts.length > 0 && (

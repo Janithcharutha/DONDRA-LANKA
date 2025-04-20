@@ -1,89 +1,86 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-
-const featuredProducts = [
-  {
-    id: 1,
-    name: "Fresh Yellowfin Tuna",
-    description: "Premium quality yellowfin tuna, perfect for sashimi and sushi.",
-    price: "Rs. 1,800 / kg",
-  },
-  {
-    id: 2,
-    name: "Tuna Steaks",
-    description: "Perfectly cut tuna steaks, ready for grilling or pan-searing.",
-    price: "Rs. 2,200 / kg",
-  },
-  {
-    id: 3,
-    name: "Tuna Fillets",
-    description: "Boneless tuna fillets, ideal for various cooking methods.",
-    price: "Rs. 2,000 / kg",
-  },
-]
+import type { Product } from "@/types/product"
 
 export default function FeaturedProducts() {
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchFeaturedProducts = async () => {
+      try {
+        const response = await fetch('/api/products/featured')
+        if (!response.ok) throw new Error('Failed to fetch featured products')
+        const data = await response.json()
+        // Take only first 3 products
+        setFeaturedProducts(data.slice(0, 3))
+      } catch (error) {
+        console.error('Error fetching featured products:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchFeaturedProducts()
+  }, [])
+
+  if (loading) {
+    return (
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <div className="h-8 w-64 bg-gray-200 rounded-full mx-auto mb-4" />
+            <div className="h-4 w-96 bg-gray-200 rounded-full mx-auto" />
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-white rounded-lg overflow-hidden shadow-sm animate-pulse">
+                <div className="h-48 bg-gray-200" />
+                <div className="p-6 space-y-3">
+                  <div className="h-6 bg-gray-200 rounded" />
+                  <div className="h-4 bg-gray-200 rounded w-2/3" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section className="py-16">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-[#3aaa9e] mb-4">Featured Products</h2>
           <p className="text-gray-700 max-w-2xl mx-auto">
-            Discover our selection of premium tuna products, sustainably sourced and delivered fresh to your doorstep.
+            Discover our selection of premium products, sustainably sourced and delivered fresh to your doorstep.
           </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
           {featuredProducts.map((product) => (
-            <div
-              key={product.id}
+            <Link
+              key={product._id}
+              href={`/products/${product._id}`}
               className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
             >
-              <div className="h-48 bg-[#c2f8e9] flex items-center justify-center">
-                <svg
-                  viewBox="0 0 100 100"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-24 h-24 text-[#3aaa9e]"
-                >
-                  <path
-                    d="M80 50C80 50 65 35 50 35C35 35 20 50 20 50C20 50 35 65 50 65C65 65 80 50 80 50Z"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M20 50H10"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M90 40L80 50L90 60"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <circle cx="45" cy="45" r="3" fill="currentColor" stroke="currentColor" strokeWidth="1" />
-                </svg>
+              <div className="h-48 bg-[#c2f8e9] relative">
+                <img
+                  src={product.images[0] || "/placeholder.svg"}
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div className="p-6">
-                <h3 className="text-xl font-semibold mb-2 text-[#3aaa9e]">{product.name}</h3>
-                <p className="text-gray-600 mb-4">{product.description}</p>
-                <div className="flex justify-between items-center">
-                  <span className="font-medium text-gray-800">{product.price}</span>
-                  <Link
-                    href={`/products/${product.id}`}
-                    className="px-4 py-2 bg-[#3aaa9e] text-white rounded hover:bg-[#2d8a80] transition-colors"
-                  >
-                    View Details
-                  </Link>
-                </div>
+                <h3 className="text-xl font-semibold text-[#3aaa9e]">{product.name}</h3>
+                <p className="text-gray-600 mt-2">Rs. {product.price.toFixed(2)}</p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 

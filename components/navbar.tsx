@@ -80,13 +80,7 @@ export default function Navbar() {
                   {item.name}
                 </Link>
               ))}
-              <Link
-                href="/admin"
-                className="hover:text-white/80 font-medium"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Admin
-              </Link>
+              
             </div>
           </nav>
         )}

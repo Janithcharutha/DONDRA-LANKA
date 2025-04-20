@@ -45,7 +45,7 @@ export default function CategorySlider() {
           {categories.map((category) => (
             <Link
               key={category.id}
-              href={`/products/${category.id}`}
+              href={`/products/category/${category.id}`}
               className="w-[100px] h-[120px] flex flex-col items-center justify-center border rounded-md p-2 hover:shadow-md transition-shadow"
             >
               <div className="w-10 h-10 text-[#00957a]">{category.icon}</div>

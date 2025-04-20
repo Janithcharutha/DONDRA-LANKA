@@ -4,8 +4,16 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import type { Product } from "@/types/product"
 
+type CategoryProducts = {
+  [key: string]: Product[]
+}
+
 export default function ProductsPage() {
-  const [products, setProducts] = useState<Product[]>([])
+  const [categoryProducts, setCategoryProducts] = useState<CategoryProducts>({
+    'SOUR FISH CURRY': [],
+    'SRI LANKA SPICES': [],
+    'DRY FISH': []
+  })
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -13,7 +21,17 @@ export default function ProductsPage() {
       try {
         const response = await fetch('/api/products')
         const data = await response.json()
-        setProducts(data)
+        
+        // Group products by category
+        const grouped = data.reduce((acc: CategoryProducts, product: Product) => {
+          if (!acc[product.category]) {
+            acc[product.category] = []
+          }
+          acc[product.category].push(product)
+          return acc
+        }, {})
+        
+        setCategoryProducts(grouped)
       } catch (error) {
         console.error('Error fetching products:', error)
       } finally {
@@ -28,7 +46,7 @@ export default function ProductsPage() {
     return (
       <div className="container mx-auto px-4 py-12 max-w-6xl">
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
+          {[1, 2, 3].map((i) => (
             <div key={i} className="bg-white rounded-lg overflow-hidden shadow-sm animate-pulse">
               <div className="h-48 bg-gray-200" />
               <div className="p-6">
@@ -57,35 +75,68 @@ export default function ProductsPage() {
         </p>
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {products.map((product) => (
-          <div
-            key={product._id}
-            className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
-          >
-            <div className="h-48 bg-[#c2f8e9] flex items-center justify-center">
-              <img
-                src={product.images[0] || "/placeholder.svg"}
-                alt={product.name}
-                className="h-full w-full object-cover"
-              />
-            </div>
-            <div className="p-6">
-              <h3 className="text-xl font-semibold mb-2 text-[#3aaa9e]">{product.name}</h3>
-              <p className="text-gray-600 mb-4">{product.description}</p>
-              <div className="flex justify-between items-center">
-                <span className="font-medium text-gray-800">Rs. {product.price.toFixed(2)}</span>
-                <Link
-                  href={`/products/${product._id}`}
-                  className="px-4 py-2 bg-[#3aaa9e] text-white rounded hover:bg-[#2d8a80] transition-colors"
+      {/* Category Sections */}
+      {Object.entries(categoryProducts).map(([category, products]) => (
+        products.length > 0 && (
+          <section key={category} className="mb-16">
+            <h2 className="text-2xl font-bold text-[#3aaa9e] mb-6">{category}</h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {/* Show only first 3 products */}
+              {products.slice(0, 3).map((product) => (
+                <div
+                  key={product._id}
+                  className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                 >
-                  View Details
+                  <div className="h-48 bg-[#c2f8e9] flex items-center justify-center">
+                    <img
+                      src={product.images[0] || "/placeholder.svg"}
+                      alt={product.name}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-xl font-semibold mb-2 text-[#3aaa9e]">{product.name}</h3>
+                    <p className="text-gray-600 mb-4">{product.description}</p>
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium text-gray-800">Rs. {product.price.toFixed(2)}</span>
+                      <Link
+                        href={`/products/${product._id}`}
+                        className="px-4 py-2 bg-[#3aaa9e] text-white rounded hover:bg-[#2d8a80] transition-colors"
+                      >
+                        View Details
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {/* Show View All button if more than 3 products exist */}
+            {products.length > 3 && (
+              <div className="mt-6 text-center">
+                <Link
+                  href={`/products/category/${category.toLowerCase().replace(/\s+/g, '-')}`}
+                  className="inline-flex items-center px-6 py-3 bg-[#3aaa9e] text-white rounded-md hover:bg-[#2d8a80] transition-colors"
+                >
+                  View all {category} products
+                  <svg 
+                    className="w-4 h-4 ml-2" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      d="M9 5l7 7-7 7" 
+                    />
+                  </svg>
                 </Link>
               </div>
-            </div>
-          </div>
-        ))}
-      </div>
+            )}
+          </section>
+        )
+      ))}
     </main>
   )
 }
