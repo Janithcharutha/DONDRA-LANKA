@@ -1,251 +1,327 @@
 "use client"
 
-import type React from "react"
-
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { ChevronLeft } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { use } from 'react'
+import { useState, useEffect, FormEvent, ChangeEvent } from 'react'
+import { useRouter } from 'next/navigation'
+import { useToast } from "@/components/ui/use-toast"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import type { HotDeal } from "@/types/hot-deal"
+import type { Product } from "@/types/product"
 
-// Mock hot deal data for editing
-const mockHotDeal = {
-  id: 1,
-  name: "Fresh Yellowfin Tuna - Special Offer",
-  description: "Premium quality yellowfin tuna at a special discount price. Limited time offer!",
-  productId: 1,
-  originalPrice: 2200,
-  discountedPrice: 1800,
-  discount: 18,
-  startDate: "2023-04-10",
-  endDate: "2023-04-20",
-  status: "Active",
-}
+export default function EditHotDealPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
+  const router = useRouter()
+  const { toast } = useToast()
+  const [hotDeal, setHotDeal] = useState<HotDeal | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [products, setProducts] = useState<Product[]>([])
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [discountPercent, setDiscountPercent] = useState<number>(10)
 
-// Mock products for selection
-const mockProducts = [
-  { id: 1, name: "Fresh Yellowfin Tuna", price: 2200 },
-  { id: 2, name: "Tuna Steaks", price: 2200 },
-  { id: 3, name: "Tuna Fillets", price: 2000 },
-  { id: 4, name: "Smoked Tuna", price: 2500 },
-  { id: 5, name: "Seer Fish / Thora", price: 2590 },
-]
-
-export default function EditHotDealPage({ params }: { params: { id: string } }) {
-  const [hotDeal, setHotDeal] = useState(mockHotDeal)
-  const [selectedProduct, setSelectedProduct] = useState<number>(mockHotDeal.productId)
-  const [discountType, setDiscountType] = useState<"percentage" | "fixed">("percentage")
-  const [discountValue, setDiscountValue] = useState<number>(mockHotDeal.discount)
-  const [calculatedPrice, setCalculatedPrice] = useState<number>(mockHotDeal.discountedPrice)
-
-  const isNewDeal = params.id === "new"
-
-  // Update calculated price when product, discount type, or discount value changes
   useEffect(() => {
-    const product = mockProducts.find((p) => p.id === selectedProduct)
-    if (product) {
-      let newPrice = product.price
-      if (discountType === "percentage") {
-        newPrice = product.price - (product.price * discountValue) / 100
-      } else {
-        newPrice = product.price - discountValue
+    // Only fetch if we're editing an existing hot deal
+    if (id !== 'new') {
+      const fetchHotDeal = async () => {
+        try {
+          setLoading(true)
+          const response = await fetch(`/api/hot-deals/${id}`)
+          
+          if (!response.ok) {
+            const error = await response.json()
+            throw new Error(error.error || 'Failed to fetch hot deal')
+          }
+          
+          const data = await response.json()
+          setHotDeal(data)
+        } catch (error) {
+          console.error('Error:', error)
+          toast({
+            title: "Error",
+            description: error instanceof Error ? error.message : "Failed to load hot deal",
+            variant: "destructive",
+          })
+          router.push('/admin/hot-deals')
+        } finally {
+          setLoading(false)
+        }
       }
-      setCalculatedPrice(Math.max(0, newPrice))
-      setHotDeal({
-        ...hotDeal,
-        originalPrice: product.price,
-        discountedPrice: Math.max(0, newPrice),
-        discount: discountValue,
-      })
+
+      fetchHotDeal()
     }
-  }, [selectedProduct, discountType, discountValue])
+  }, [id, toast, router])
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setHotDeal({ ...hotDeal, [name]: value })
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('/api/products')
+        if (!response.ok) throw new Error('Failed to fetch products')
+        const data = await response.json()
+        setProducts(data)
+      } catch (error) {
+        console.error('Error:', error)
+        toast({
+          title: "Error",
+          description: "Failed to load products",
+          variant: "destructive",
+        })
+      }
+    }
+
+    fetchProducts()
+  }, [toast])
+
+  const handleProductChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const productId = event.target.value
+    const product = products.find(p => p._id === productId)
+    if (product) {
+      setSelectedProduct(product)
+      // Auto-fill the original price
+      const form = event.target.form
+      if (form) {
+        const originalPriceInput = form.elements.namedItem('originalPrice') as HTMLInputElement
+        const discountedPriceInput = form.elements.namedItem('discountedPrice') as HTMLInputElement
+        const discountInput = form.elements.namedItem('discount') as HTMLInputElement
+        
+        originalPriceInput.value = product.price.toString()
+        // Calculate initial discounted price (10% discount)
+        const discounted = product.price * (1 - 10/100)
+        discountedPriceInput.value = discounted.toFixed(2)
+        discountInput.value = '10% OFF'
+      }
+    }
   }
 
-  const handleProductChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedProduct(Number(e.target.value))
+  const handleDiscountChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const percent = parseInt(event.target.value)
+    setDiscountPercent(percent)
+    
+    if (selectedProduct) {
+      const form = event.target.form
+      if (form) {
+        const discountedPriceInput = form.elements.namedItem('discountedPrice') as HTMLInputElement
+        const discountInput = form.elements.namedItem('discount') as HTMLInputElement
+        
+        const discounted = selectedProduct.price * (1 - percent/100)
+        discountedPriceInput.value = discounted.toFixed(2)
+        discountInput.value = `${percent}% OFF`
+      }
+    }
   }
 
-  const handleDiscountTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setDiscountType(e.target.value as "percentage" | "fixed")
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    try {
+      setLoading(true)
+      const formData = new FormData(event.currentTarget)
+      
+      // Format dates to ISO string
+      const startDate = new Date(formData.get('startDate') as string).toISOString()
+      const endDate = new Date(formData.get('endDate') as string).toISOString()
+      
+      const response = await fetch('/api/hot-deals', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.get('name'),
+          description: formData.get('description'),
+          product: formData.get('product'),
+          originalPrice: Number(formData.get('originalPrice')),
+          discountedPrice: Number(formData.get('discountedPrice')),
+          discount: formData.get('discount'),
+          startDate,
+          endDate,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to create hot deal')
+      }
+
+      toast({
+        title: "Success",
+        description: "Hot deal created successfully",
+      })
+      router.push('/admin/hot-deals')
+    } catch (error) {
+      console.error('Error:', error)
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to create hot deal",
+        variant: "destructive",
+      })
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleDiscountValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDiscountValue(Number(e.target.value))
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // In a real app, this would save the hot deal data
-    alert(`Hot deal ${isNewDeal ? "created" : "updated"} successfully!`)
+  if (loading) {
+    return (
+      <div className="p-6">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 w-64 bg-gray-200 rounded"></div>
+          <div className="space-y-2">
+            <div className="h-4 w-full bg-gray-200 rounded"></div>
+            <div className="h-4 w-2/3 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div>
-      <div className="mb-6">
-        <Link href="/admin/hot-deals" className="text-[#00957a] hover:underline flex items-center">
-          <ChevronLeft className="h-4 w-4 mr-1" /> Back to Hot Deals
-        </Link>
-        <h1 className="text-2xl font-bold text-gray-800 mt-2">
-          {isNewDeal ? "Create Hot Deal" : `Edit Hot Deal: ${hotDeal.name}`}
-        </h1>
-      </div>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-6">
+        {id === 'new' ? 'Create New Hot Deal' : 'Edit Hot Deal'}
+      </h1>
 
-      <form onSubmit={handleSubmit} className="space-y-8">
-        {/* Basic Information */}
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Deal Information</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                Deal Name
-              </label>
-              <Input id="name" name="name" value={hotDeal.name} onChange={handleInputChange} required />
-            </div>
-            <div>
-              <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
-                Status
-              </label>
-              <select
-                id="status"
-                name="status"
-                value={hotDeal.status}
-                onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#00957a]"
-                required
-              >
-                <option value="Active">Active</option>
-                <option value="Scheduled">Scheduled</option>
-                <option value="Expired">Expired</option>
-              </select>
-            </div>
-            <div className="md:col-span-2">
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-                Description
-              </label>
-              <Textarea
-                id="description"
-                name="description"
-                value={hotDeal.description}
-                onChange={handleInputChange}
-                rows={3}
-                required
-              />
-            </div>
+      <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
+      <div>
+          <Label htmlFor="product">Select Product</Label>
+          <select
+            id="product"
+            name="product"
+            defaultValue={hotDeal?.product._id}
+            onChange={handleProductChange}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#3aaa9e]"
+            required
+          >
+            <option value="">Select a product</option>
+            {products.map((product) => (
+              <option key={product._id} value={product._id}>
+                {product.name} - Rs. {product.price.toFixed(2)}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <Label htmlFor="name">Deal Name</Label>
+          <Input
+            id="name"
+            name="name"
+            defaultValue={hotDeal?.name}
+            placeholder="Summer Special Offer"
+            required
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="description">Description</Label>
+          <Textarea
+            id="description"
+            name="description"
+            defaultValue={hotDeal?.description}
+            placeholder="Describe the deal..."
+            required
+          />
+        </div>
+
+
+
+        {selectedProduct && (
+          <div>
+            <Label htmlFor="discountPercent">Select Discount Percentage</Label>
+            <select
+              id="discountPercent"
+              name="discountPercent"
+              value={discountPercent}
+              onChange={handleDiscountChange}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#3aaa9e]"
+              required
+            >
+              {Array.from({ length: 9 }, (_, i) => (i + 1) * 10).map((percent) => (
+                <option key={percent} value={percent}>
+                  {percent}% Discount
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="originalPrice">Original Price</Label>
+            <Input
+              id="originalPrice"
+              name="originalPrice"
+              type="number"
+              defaultValue={hotDeal?.originalPrice}
+              placeholder="1000"
+              required
+              readOnly
+              className="bg-gray-50"
+            />
+          </div>
+          <div>
+            <Label htmlFor="discountedPrice">Discounted Price</Label>
+            <Input
+              id="discountedPrice"
+              name="discountedPrice"
+              type="number"
+              defaultValue={hotDeal?.discountedPrice}
+              placeholder="800"
+              required
+              readOnly
+              className="bg-gray-50"
+            />
           </div>
         </div>
 
-        {/* Product and Pricing */}
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Product and Pricing</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label htmlFor="productId" className="block text-sm font-medium text-gray-700 mb-1">
-                Select Product
-              </label>
-              <select
-                id="productId"
-                value={selectedProduct}
-                onChange={handleProductChange}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#00957a]"
-                required
-              >
-                <option value="">Select a product</option>
-                {mockProducts.map((product) => (
-                  <option key={product.id} value={product.id}>
-                    {product.name} - Rs. {product.price}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label htmlFor="discountType" className="block text-sm font-medium text-gray-700 mb-1">
-                Discount Type
-              </label>
-              <select
-                id="discountType"
-                value={discountType}
-                onChange={handleDiscountTypeChange}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#00957a]"
-                required
-              >
-                <option value="percentage">Percentage (%)</option>
-                <option value="fixed">Fixed Amount (Rs.)</option>
-              </select>
-            </div>
-            <div>
-              <label htmlFor="discountValue" className="block text-sm font-medium text-gray-700 mb-1">
-                {discountType === "percentage" ? "Discount Percentage" : "Discount Amount (Rs.)"}
-              </label>
-              <Input
-                id="discountValue"
-                type="number"
-                min="0"
-                max={discountType === "percentage" ? "100" : undefined}
-                value={discountValue}
-                onChange={handleDiscountValueChange}
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Price After Discount</label>
-              <div className="flex items-center space-x-2">
-                <div className="border border-gray-300 rounded-md px-3 py-2 bg-gray-50 w-full">
-                  <span className="text-gray-500 line-through mr-2">Rs. {hotDeal.originalPrice?.toLocaleString()}</span>
-                  <span className="text-[#00957a] font-medium">Rs. {calculatedPrice.toLocaleString()}</span>
-                </div>
-              </div>
-            </div>
+        <div>
+          <Label htmlFor="discount">Discount</Label>
+          <Input
+            id="discount"
+            name="discount"
+            defaultValue={hotDeal?.discount}
+            placeholder="20% OFF"
+            required
+            readOnly
+            className="bg-gray-50"
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="startDate">Start Date</Label>
+            <Input
+              id="startDate"
+              name="startDate"
+              type="datetime-local"
+              defaultValue={hotDeal?.startDate?.split('.')[0]}
+              required
+            />
+          </div>
+          <div>
+            <Label htmlFor="endDate">End Date</Label>
+            <Input
+              id="endDate"
+              name="endDate"
+              type="datetime-local"
+              defaultValue={hotDeal?.endDate?.split('.')[0]}
+              required
+            />
           </div>
         </div>
 
-        {/* Deal Duration */}
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Deal Duration</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
-                Start Date
-              </label>
-              <Input
-                id="startDate"
-                name="startDate"
-                type="date"
-                value={hotDeal.startDate}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
-                End Date
-              </label>
-              <Input
-                id="endDate"
-                name="endDate"
-                type="date"
-                value={hotDeal.endDate}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Form Actions */}
         <div className="flex justify-end space-x-4">
-          <Link href="/admin/hot-deals">
-            <Button type="button" variant="outline" className="border-gray-300 text-gray-700">
-              Cancel
-            </Button>
-          </Link>
-          <Button type="submit" className="bg-[#00957a] hover:bg-[#007a64]">
-            {isNewDeal ? "Create Hot Deal" : "Save Changes"}
-          </Button>
+          <button
+            type="button"
+            onClick={() => router.push('/admin/hot-deals')}
+            className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="px-4 py-2 bg-[#3aaa9e] text-white rounded hover:bg-[#2d8a80] disabled:opacity-50"
+            disabled={loading}
+          >
+            {loading ? 'Saving...' : 'Save Hot Deal'}
+          </button>
         </div>
       </form>
     </div>

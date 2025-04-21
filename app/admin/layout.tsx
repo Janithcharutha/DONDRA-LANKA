@@ -7,6 +7,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { LayoutDashboard, Package, Tags, Users, Settings, LogOut, Menu, X } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
+import { Newspaper } from "lucide-react";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -54,11 +55,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       href: "/admin/hot-deals",
       icon: <Tags className="h-5 w-5" />,
     },
-    // {
-    //   name: "Customers",
-    //   href: "/admin/customers",
-    //   icon: <Users className="h-5 w-5" />,
-    // },
+    {
+      name: "News Banners",
+      href: "/admin/news-banners",
+      icon: <Newspaper className="h-5 w-5" />,
+    },
     // {
     //   name: "Settings",
     //   href: "/admin/settings",

@@ -1,79 +1,119 @@
+'use client'
+
+import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Package, Tags, TrendingUp, Users } from "lucide-react"
+import { Package, Tags, TrendingUp, Users, Newspaper } from "lucide-react"
+import { useToast } from "@/components/ui/use-toast"
+import type { Product } from "@/types/product"
+import type { HotDeal } from "@/types/hot-deal"
+import type { NewsBanner } from "@/types/news-banner"
 
 export default function AdminDashboard() {
-  // Mock data for dashboard
+  const [totalProducts, setTotalProducts] = useState<number>(0)
+  const [activeHotDeals, setActiveHotDeals] = useState<number>(0)
+  const [activeNewsBanners, setActiveNewsBanners] = useState<number>(0)
+  const [recentProducts, setRecentProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
+  const { toast } = useToast()
+
+  // Fetch recent products
+  useEffect(() => {
+    const fetchRecentProducts = async () => {
+      try {
+        const response = await fetch('/api/products/recent')
+        if (!response.ok) throw new Error('Failed to fetch products')
+        const data = await response.json()
+        setRecentProducts(data)
+      } catch (error) {
+        console.error('Error fetching products:', error)
+        toast({
+          title: "Error",
+          description: "Failed to load recent products",
+          variant: "destructive",
+        })
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchRecentProducts()
+  }, [toast])
+
+  // Fetch dashboard stats
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        // Fetch total products
+        const productsResponse = await fetch('/api/products')
+        if (!productsResponse.ok) throw new Error('Failed to fetch products')
+        const productsData = await productsResponse.json()
+        setTotalProducts(productsData.length)
+
+        // Fetch and filter active hot deals
+        const hotDealsResponse = await fetch('/api/hot-deals')
+        if (!hotDealsResponse.ok) throw new Error('Failed to fetch hot deals')
+        const hotDealsData = await hotDealsResponse.json()
+        
+        const activeDeals = hotDealsData.filter((deal: HotDeal) => {
+          const now = new Date()
+          const startDate = new Date(deal.startDate)
+          const endDate = new Date(deal.endDate)
+          return now >= startDate && now <= endDate && deal.status === 'Active'
+        })
+        
+        setActiveHotDeals(activeDeals.length)
+
+        // Fetch and filter active news banners
+        const newsBannersResponse = await fetch('/api/news-banners')
+        if (!newsBannersResponse.ok) throw new Error('Failed to fetch news banners')
+        const newsBannersData = await newsBannersResponse.json()
+        
+        const activeBanners = newsBannersData.filter((banner: NewsBanner) => {
+          const now = new Date()
+          const startDate = new Date(banner.startDate)
+          const endDate = new Date(banner.endDate)
+          return now >= startDate && now <= endDate && banner.status === 'Active'
+        })
+        
+        setActiveNewsBanners(activeBanners.length)
+      } catch (error) {
+        console.error('Error fetching stats:', error)
+        toast({
+          title: "Error",
+          description: "Failed to load dashboard statistics",
+          variant: "destructive",
+        })
+      }
+    }
+
+    fetchStats()
+  }, [toast])
+
+  // Stats array
   const stats = [
     {
       title: "Total Products",
-      value: "124",
-      change: "+12%",
+      value: loading ? "..." : totalProducts.toString(),
+      change: "+12%", // You might want to calculate this based on historical data
       trend: "up",
       icon: <Package className="h-8 w-8 text-[#00957a]" />,
       link: "/admin/products",
     },
     {
       title: "Active Hot Deals",
-      value: "8",
-      change: "+3",
+      value: loading ? "..." : activeHotDeals.toString(),
+      change: `+${activeHotDeals}`, // Or calculate the change from last period
       trend: "up",
       icon: <Tags className="h-8 w-8 text-[#00957a]" />,
       link: "/admin/hot-deals",
     },
     {
-      title: "Total Customers",
-      value: "1,254",
-      change: "+18%",
+      title: "Active News Banners",
+      value: loading ? "..." : activeNewsBanners.toString(),
+      change: `+${activeNewsBanners}`,
       trend: "up",
-      icon: <Users className="h-8 w-8 text-[#00957a]" />,
-      link: "/admin/customers",
-    },
-    {
-      title: "Monthly Sales",
-      value: "Rs. 458,200",
-      change: "+24%",
-      trend: "up",
-      icon: <TrendingUp className="h-8 w-8 text-[#00957a]" />,
-      link: "#",
-    },
-  ]
-
-  // Mock data for recent products
-  const recentProducts = [
-    {
-      id: 1,
-      name: "Fresh Yellowfin Tuna",
-      category: "Tuna",
-      price: "Rs. 1,800",
-      status: "In Stock",
-    },
-    {
-      id: 2,
-      name: "Tuna Steaks",
-      category: "Tuna",
-      price: "Rs. 2,200",
-      status: "Low Stock",
-    },
-    {
-      id: 3,
-      name: "Seer Fish / Thora",
-      category: "Fish",
-      price: "Rs. 2,590",
-      status: "In Stock",
-    },
-    {
-      id: 4,
-      name: "Prawns - Large",
-      category: "Shellfish",
-      price: "Rs. 3,200",
-      status: "In Stock",
-    },
-    {
-      id: 5,
-      name: "Crab - Mud Crab",
-      category: "Shellfish",
-      price: "Rs. 2,800",
-      status: "Out of Stock",
+      icon: <Newspaper className="h-8 w-8 text-[#00957a]" />,
+      link: "/admin/news-banners",
     },
   ]
 
@@ -123,6 +163,12 @@ export default function AdminDashboard() {
             Create Hot Deal
           </Link>
           <Link
+            href="/admin/news-banners/new"
+            className="px-4 py-2 bg-[#00957a] text-white rounded-md hover:bg-[#007a64] transition-colors"
+          >
+            Add News Banner
+          </Link>
+          <Link
             href="/admin/products"
             className="px-4 py-2 border border-[#00957a] text-[#00957a] rounded-md hover:bg-[#e0fbf4] transition-colors"
           >
@@ -133,6 +179,13 @@ export default function AdminDashboard() {
             className="px-4 py-2 border border-[#00957a] text-[#00957a] rounded-md hover:bg-[#e0fbf4] transition-colors"
           >
             Manage Hot Deals
+          </Link>
+          
+          <Link
+            href="/admin/news-banners"
+            className="px-4 py-2 border border-[#00957a] text-[#00957a] rounded-md hover:bg-[#e0fbf4] transition-colors"
+          >
+            Manage News Banners
           </Link>
         </div>
       </div>
@@ -182,38 +235,64 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {recentProducts.map((product) => (
-                <tr key={product.id}>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{product.name}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">{product.category}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{product.price}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        product.status === "In Stock"
-                          ? "bg-green-100 text-green-800"
-                          : product.status === "Low Stock"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-red-100 text-red-800"
-                      }`}
-                    >
-                      {product.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <Link href={`/admin/products/${product.id}`} className="text-[#00957a] hover:text-[#007a64] mr-4">
-                      Edit
-                    </Link>
-                    <button className="text-red-600 hover:text-red-900">Delete</button>
-                  </td>
-                </tr>
-              ))}
+              {loading ? (
+                // Loading skeleton
+                [...Array(5)].map((_, i) => (
+                  <tr key={i}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="h-4 bg-gray-200 rounded w-32 animate-pulse"></div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                recentProducts.map((product) => (
+                  <tr key={product._id}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">{product.name}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-500">{product.category}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">Rs. {product.price.toFixed(2)}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          product.status === "In Stock"
+                            ? "bg-green-100 text-green-800"
+                            : product.status === "Low Stock"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {product.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <Link 
+                        href={`/admin/products/${product._id}/edit`} 
+                        className="text-[#00957a] hover:text-[#007a64] mr-4"
+                      >
+                        Edit
+                      </Link>
+                      <button className="text-red-600 hover:text-red-900">Delete</button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

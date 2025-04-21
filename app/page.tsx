@@ -5,14 +5,13 @@ import FeaturedProducts from "@/components/featured-products"
 import AboutSection from "@/components/about-section"
 import TestimonialsSection from "@/components/testimonials-section"
 import ContactCta from "@/components/contact-cta"
-import HotDeals from "@/components/hot-deals"
-
+import NewsBanners from "@/components/news-banners"
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col">
       <CategorySlider />
       {/* <ProductCategoryTabs /> */}
-      <HotDeals />
+      <NewsBanners />
       <Hero />
       <FeaturedProducts />
       <AboutSection />

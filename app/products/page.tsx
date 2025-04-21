@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import type { Product } from "@/types/product"
+import HotDeals from "@/components/hot-deals"
+import CategorySlider from "@/components/category-slider"
 
 type CategoryProducts = {
   [key: string]: Product[]
@@ -66,6 +68,7 @@ export default function ProductsPage() {
 
   return (
     <main className="container mx-auto px-4 py-12 max-w-6xl">
+      <CategorySlider />
       <h1 className="text-4xl font-bold text-[#3aaa9e] mb-8 text-center">Our Products</h1>
 
       <div className="mb-12">
@@ -74,6 +77,7 @@ export default function ProductsPage() {
           products are carefully handled to ensure the highest quality and freshness.
         </p>
       </div>
+       <HotDeals />
 
       {/* Category Sections */}
       {Object.entries(categoryProducts).map(([category, products]) => (

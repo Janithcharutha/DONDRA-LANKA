@@ -5,52 +5,20 @@ const productSchema = new mongoose.Schema({
     type: String, 
     required: true 
   },
-  category: { 
-    type: String, 
-    required: true 
-  },
+  images: [{ 
+    type: String 
+  }],
   price: { 
     type: Number, 
     required: true 
   },
-  originalPrice: { 
-    type: Number 
-  },
-  stock: { 
-    type: Number, 
-    default: 0 
-  },
-  status: {
-    type: String,
-    enum: ['In Stock', 'Low Stock', 'Out of Stock'],
-    default: 'In Stock'
-  },
-  images: {
-    type: [String],
-    default: []
-  },
-  description: String,
-  minOrder: String,
-  types: {
-    type: [String],
-    default: []
-  },
-  weightOptions: {
-    type: [String],
-    default: []
-  },
-  nutritionalInfo: {
-    type: [String],
-    default: []
-  },
-  storageInstructions: String
+  category: { 
+    type: String, 
+    required: true 
+  }
 }, {
-  timestamps: true,
-  versionKey: false // Disable the version key
+  timestamps: true
 });
-
-// Drop existing indexes to prevent duplicate key errors
-productSchema.index({}, { sparse: true });
 
 const Product = mongoose.models.Product || mongoose.model('Product', productSchema);
 
