@@ -1,5 +1,5 @@
 'use client'
-
+import WhatsAppButton from "@/components/whatsapp-button"
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { ChevronRight, Pencil, Trash2 } from 'lucide-react'
@@ -121,6 +121,7 @@ export default function ProductDetail({ id }: { id: string }) {
 
   return (
     <main className="container mx-auto px-4 py-8 max-w-6xl">
+      <WhatsAppButton />
       {/* Breadcrumb and Actions */}
       <div className="flex justify-between items-center mb-6">
         <nav className="flex items-center text-sm text-gray-500">

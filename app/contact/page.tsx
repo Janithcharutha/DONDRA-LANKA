@@ -2,10 +2,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { MapPin, Phone, Mail, Clock } from "lucide-react"
-
+import WhatsAppButton from "@/components/whatsapp-button"
 export default function ContactPage() {
   return (
     <main className="container mx-auto px-4 py-12 max-w-6xl">
+      <WhatsAppButton />
       <h1 className="text-4xl font-bold text-[#3aaa9e] mb-8 text-center">Contact Us</h1>
 
       <div className="grid md:grid-cols-2 gap-12 mb-16">
@@ -21,7 +22,7 @@ export default function ContactPage() {
               <MapPin className="w-6 h-6 text-[#3aaa9e] mt-0.5" />
               <div>
                 <h3 className="font-medium text-gray-900">Address</h3>
-                <p className="text-gray-600">123 Seafood Lane, Colombo, Sri Lanka</p>
+                <p className="text-gray-600">Devinuwara , Matara, Sri Lanka</p>
               </div>
             </div>
 
@@ -29,7 +30,7 @@ export default function ContactPage() {
               <Phone className="w-6 h-6 text-[#3aaa9e] mt-0.5" />
               <div>
                 <h3 className="font-medium text-gray-900">Phone</h3>
-                <p className="text-gray-600">+94 11 234 5678</p>
+                <p className="text-gray-600">+94 77 432 1384</p>
               </div>
             </div>
 
@@ -100,9 +101,18 @@ export default function ContactPage() {
 
       <div className="bg-[#c2f8e9] p-6 rounded-lg">
         <h2 className="text-2xl font-semibold mb-4 text-[#3aaa9e] text-center">Our Location</h2>
-        <div className="h-96 bg-gray-200 rounded-lg flex items-center justify-center">
-          <p className="text-gray-500">Map would be displayed here</p>
-        </div>
+        <div className="h-96 rounded-lg overflow-hidden">
+  <iframe
+    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15873.877716305758!2d80.57960389462261!3d5.929834554870446!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae139a8e9587403%3A0x4397ee593951bfbd!2sDondra!5e0!3m2!1sen!2slk!4v1745334058587!5m2!1sen!2slk"
+    width="100%"
+    height="100%"
+  
+    loading="lazy"
+    referrerPolicy="no-referrer-when-downgrade"
+    className="w-full h-full border-0"
+  ></iframe>
+</div>
+
       </div>
     </main>
   )

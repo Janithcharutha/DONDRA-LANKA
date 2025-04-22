@@ -5,7 +5,7 @@ import Link from "next/link"
 import type { Product } from "@/types/product"
 import HotDeals from "@/components/hot-deals"
 import CategorySlider from "@/components/category-slider"
-
+import WhatsAppButton from "@/components/whatsapp-button"
 type CategoryProducts = {
   [key: string]: Product[]
 }
@@ -62,6 +62,7 @@ export default function ProductsPage() {
             </div>
           ))}
         </div>
+        
       </div>
     )
   }
@@ -69,6 +70,7 @@ export default function ProductsPage() {
   return (
     <main className="container mx-auto px-4 py-12 max-w-6xl">
       <CategorySlider />
+      <WhatsAppButton />
       <h1 className="text-4xl font-bold text-[#3aaa9e] mb-8 text-center">Our Products</h1>
 
       <div className="mb-12">

@@ -113,9 +113,9 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold text-lg mb-4">Contact Us</h3>
             <address className="not-italic text-white/80">
-              <p className="mb-2">123 Seafood Lane</p>
-              <p className="mb-2">Colombo, Sri Lanka</p>
-              <p className="mb-2">Phone: +94 11 234 5678</p>
+              <p className="mb-2">Devinuwara </p>
+              <p className="mb-2">Matara, Sri Lanka</p>
+              <p className="mb-2">Phone: +94 77 432 1384</p>
               <p className="mb-4">Email: info@DONDRA-LANKA</p>
             </address>
           </div>

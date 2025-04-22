@@ -1,5 +1,5 @@
 "use client"
-
+import WhatsAppButton from "@/components/whatsapp-button"
 import { useState, useEffect } from "react"
 import { Tag, Clock } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
@@ -55,6 +55,7 @@ export default function AllHotDealsPage() {
 
   return (
     <div className="container mx-auto px-4 max-w-6xl py-8">
+      <WhatsAppButton />
       <div className="flex items-center mb-6">
         <Tag className="w-6 h-6 text-[#00957a] mr-2" />
         <h1 className="text-2xl font-bold text-[#00957a]">All Hot Deals</h1>

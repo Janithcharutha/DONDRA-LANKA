@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import { ChevronLeft } from "lucide-react"
 import type { Product } from "@/types/product"
 import { useToast } from "@/components/ui/use-toast"
-
+import WhatsAppButton from "@/components/whatsapp-button"
 export default function CategoryPage({ params }: { params: { category: string } }) {
   const router = useRouter()
   const { toast } = useToast()
@@ -70,6 +70,7 @@ export default function CategoryPage({ params }: { params: { category: string } 
 
   return (
     <main className="container mx-auto px-4 py-12 max-w-6xl">
+      <WhatsAppButton />
       <div className="flex items-center mb-8">
         <button
           onClick={() => router.back()}

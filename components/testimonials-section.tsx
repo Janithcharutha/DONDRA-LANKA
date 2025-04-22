@@ -4,7 +4,7 @@ const testimonials = [
   {
     id: 1,
     name: "Samantha P.",
-    location: "Colombo",
+    location: "Matara",
     rating: 5,
     text: "The quality of tuna from DONDRA-LANKA is exceptional. It's always fresh, and the delivery is prompt. I've been a regular customer for over a year now.",
   },

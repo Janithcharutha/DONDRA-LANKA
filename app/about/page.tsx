@@ -1,6 +1,8 @@
+import WhatsAppButton from "@/components/whatsapp-button"
 export default function AboutPage() {
   return (
     <main className="container mx-auto px-4 py-12 max-w-5xl">
+      <WhatsAppButton />
       <h1 className="text-4xl font-bold text-[#3aaa9e] mb-8 text-center">About DONDRA-LANKA</h1>
 
       <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
