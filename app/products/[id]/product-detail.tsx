@@ -270,7 +270,7 @@ export default function ProductDetail({ id }: { id: string }) {
       </div>
 
       {/* Category Sections */}
-      <CategorySection 
+      {/* <CategorySection 
         category="sour-fish-curry" 
         title="SOUR FISH CURRY" 
       />
@@ -281,7 +281,7 @@ export default function ProductDetail({ id }: { id: string }) {
       <CategorySection 
         category="dry-fish" 
         title="DRY FISH" 
-      />
+      /> */}
 
       {/* Related Products */}
       {relatedProducts.length > 0 && (

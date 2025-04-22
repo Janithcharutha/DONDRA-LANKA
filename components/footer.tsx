@@ -93,29 +93,20 @@ export default function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link href="/products" className="text-white/80 hover:text-white">
-                  Fresh Tuna
+                SOUR FISH CURRY
                 </Link>
               </li>
               <li>
                 <Link href="/products" className="text-white/80 hover:text-white">
-                  Tuna Steaks
+                SRI LANKA SPICES
                 </Link>
               </li>
               <li>
                 <Link href="/products" className="text-white/80 hover:text-white">
-                  Tuna Fillets
+                DRY FISH
                 </Link>
               </li>
-              <li>
-                <Link href="/products" className="text-white/80 hover:text-white">
-                  Smoked Tuna
-                </Link>
-              </li>
-              <li>
-                <Link href="/products" className="text-white/80 hover:text-white">
-                  Canned Tuna
-                </Link>
-              </li>
+
             </ul>
           </div>
 
