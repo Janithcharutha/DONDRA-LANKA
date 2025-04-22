@@ -1,13 +1,13 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Newspaper } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import type { NewsBanner } from "@/types/news-banner"
 
 export default function NewsBanners() {
   const [loading, setLoading] = useState(true)
   const [banners, setBanners] = useState<NewsBanner[]>([])
+  const [currentIndex, setCurrentIndex] = useState(0)
   const { toast } = useToast()
 
   useEffect(() => {
@@ -18,44 +18,20 @@ export default function NewsBanners() {
         if (!response.ok) throw new Error('Failed to fetch banners')
         const data = await response.json()
         
-        console.log('Raw banners data:', data)
-        
         // Filter active banners
         const activeBanners = data.filter((banner: NewsBanner) => {
           const now = new Date()
           const startDate = new Date(banner.startDate)
           const endDate = new Date(banner.endDate)
-          
-          // Add date validation logging
-          if (endDate < startDate) {
-            console.warn(`Banner "${banner.title}" has invalid dates: start=${startDate.toISOString()}, end=${endDate.toISOString()}`)
-            return false
-          }
-          
-          const isActive = now >= startDate && now <= endDate && banner.status === 'Active'
-          
-          console.log('Banner:', {
-            title: banner.title,
-            startDate: startDate.toISOString(),
-            endDate: endDate.toISOString(),
-            status: banner.status,
-            isActive,
-            dateCheck: {
-              isAfterStart: now >= startDate,
-              isBeforeEnd: now <= endDate
-            }
-          })
-          
-          return isActive
+          return now >= startDate && now <= endDate && banner.status === 'Active'
         })
         
-        console.log('Filtered active banners:', activeBanners)
         setBanners(activeBanners)
       } catch (error) {
-        console.error('Error fetching banners:', error)
+        console.error('Error:', error)
         toast({
           title: "Error",
-          description: "Failed to load announcements",
+          description: "Failed to load banners",
           variant: "destructive",
         })
       } finally {
@@ -66,58 +42,48 @@ export default function NewsBanners() {
     fetchBanners()
   }, [toast])
 
-  // Add debug render log
-  console.log('Rendering with banners:', banners)
+  useEffect(() => {
+    if (banners.length <= 1) return
 
-  if (loading) {
-    return (
-      <div className="w-full bg-gray-50 py-4">
-        <div className="container mx-auto px-4 max-w-6xl">
-          <div className="animate-pulse flex space-x-4 items-center">
-            <div className="h-4 w-1/4 bg-gray-200 rounded"></div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  // Show debug UI when no banners
-  if (banners.length === 0) {
-    if (process.env.NODE_ENV === 'development') {
-      return (
-        <div className="w-full bg-yellow-50 text-yellow-800 py-2 px-4 text-sm">
-          No active banners found. Check console for debug logs.
-        </div>
+    const timer = setInterval(() => {
+      setCurrentIndex((current) => 
+        current === banners.length - 1 ? 0 : current + 1
       )
-    }
-    return null
-  }
+    }, 2500) // Change slide every 5 seconds
+
+    return () => clearInterval(timer)
+  }, [banners.length])
+
+  if (loading || banners.length === 0) return null
 
   return (
-    <div className="w-full bg-[#00957a] text-white py-4">
-      <div className="container mx-auto px-4 max-w-6xl">
-        <div className="flex flex-nowrap overflow-x-auto gap-8">
-          {banners.map((banner) => (
-            <div 
-              key={banner._id}
-              className="flex items-center flex-none min-w-[200px]"
-            >
-              <Newspaper className="h-5 w-5 mr-2 flex-shrink-0" />
-              <div className="flex flex-col">
-                <h3 className="font-semibold">{banner.title}</h3>
-                <p className="text-sm text-[#e0fbf4]">{banner.content}</p>
-              </div>
-              {banner.imageUrl && (
-                <img 
-                  src={banner.imageUrl} 
-                  alt={banner.title}
-                  className="h-12 w-12 object-cover rounded ml-4"
-                />
-              )}
-            </div>
-          ))}
+    <div className="relative w-[80%] max-w-4xl h-[400px] mx-auto overflow-hidden">
+      {banners.map((banner, index) => (
+        <div
+          key={banner._id}
+          className={`absolute w-full h-full transition-opacity duration-500 ${
+            index === currentIndex ? 'opacity-100' : 'opacity-0'
+          }`}
+        >
+          <img
+            src={banner.imageUrl}
+            alt="Banner"
+            className="w-full h-full object-cover"
+          />
         </div>
+      ))}
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+        {banners.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentIndex(index)}
+            className={`w-2 h-2 rounded-full transition-colors ${
+              index === currentIndex ? 'bg-white' : 'bg-white/50'
+            }`}
+          />
+        ))}
       </div>
     </div>
   )
+  
 }

@@ -81,7 +81,7 @@ export default function NewsBannersPage() {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Title
+                    Image
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
@@ -101,8 +101,14 @@ export default function NewsBannersPage() {
                 {newsBanners.map((banner) => (
                   <tr key={banner._id}>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
-                        {banner.title}
+                      <div className="flex items-center">
+                        <div className="h-16 w-24 flex-shrink-0">
+                          <img
+                            src={banner.imageUrl}
+                            alt="Banner"
+                            className="h-16 w-24 object-cover rounded"
+                          />
+                        </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">

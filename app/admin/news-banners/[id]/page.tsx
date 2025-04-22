@@ -116,29 +116,15 @@ export default function EditNewsBannerPage({ params }: { params: Promise<{ id: s
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const formData = new FormData(e.currentTarget)
-    const startDate = new Date(formData.get('startDate') as string)
-    const endDate = new Date(formData.get('endDate') as string)
-
-    if (endDate < startDate) {
-      toast({
-        title: "Error",
-        description: "End date must be after start date",
-        variant: "destructive",
-      })
-      return
-    }
-
     setLoading(true)
 
     try {
+      const formData = new FormData(e.currentTarget)
       const data = {
-        title: formData.get('title'),
-        content: formData.get('content'),
         imageUrl: formData.get('imageUrl'),
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString(),
-        status: formData.get('status')
+        startDate: new Date(formData.get('startDate') as string).toISOString(),
+        endDate: new Date(formData.get('endDate') as string).toISOString(),
+        status: formData.get('status') || 'Active'
       }
 
       const response = await fetch(
@@ -150,11 +136,14 @@ export default function EditNewsBannerPage({ params }: { params: Promise<{ id: s
         }
       )
 
-      if (!response.ok) throw new Error('Failed to save news banner')
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to save banner')
+      }
 
       toast({
         title: "Success",
-        description: `News banner ${id === 'new' ? 'created' : 'updated'} successfully`,
+        description: `Banner ${id === 'new' ? 'created' : 'updated'} successfully`,
       })
 
       router.push('/admin/news-banners')
@@ -162,7 +151,7 @@ export default function EditNewsBannerPage({ params }: { params: Promise<{ id: s
       console.error('Error:', error)
       toast({
         title: "Error",
-        description: "Failed to save news banner",
+        description: error instanceof Error ? error.message : "Failed to save banner",
         variant: "destructive",
       })
     } finally {
@@ -173,39 +162,17 @@ export default function EditNewsBannerPage({ params }: { params: Promise<{ id: s
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold text-gray-800 mb-6">
-        {id === 'new' ? 'Add News Banner' : 'Edit News Banner'}
+        {id === 'new' ? 'Add Banner' : 'Edit Banner'}
       </h1>
 
       <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
-        <div>
-          <Label htmlFor="title">Title</Label>
-          <Input
-            id="title"
-            name="title"
-            defaultValue={newsBanner?.title}
-            placeholder="Enter banner title"
-            required
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="content">Content</Label>
-          <Textarea
-            id="content"
-            name="content"
-            defaultValue={newsBanner?.content}
-            placeholder="Enter banner content"
-            required
-          />
-        </div>
-
         <div>
           <Label htmlFor="image">Banner Image</Label>
           <div className="mt-1 flex items-center space-x-4">
             <div
               onClick={() => fileInputRef.current?.click()}
               className={`
-                w-32 h-32 border-2 border-dashed rounded-lg flex items-center justify-center
+                w-48 h-48 border-2 border-dashed rounded-lg flex items-center justify-center
                 cursor-pointer hover:border-[#00957a] transition-colors
                 ${imagePreview ? 'border-[#00957a]' : 'border-gray-300'}
               `}
@@ -303,10 +270,10 @@ export default function EditNewsBannerPage({ params }: { params: Promise<{ id: s
           </button>
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || uploadingImage}
             className="px-4 py-2 bg-[#00957a] text-white rounded-md hover:bg-[#007a64] transition-colors disabled:opacity-50"
           >
-            {loading ? 'Saving...' : 'Save News Banner'}
+            {loading ? 'Saving...' : 'Save Banner'}
           </button>
         </div>
       </form>

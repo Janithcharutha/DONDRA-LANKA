@@ -13,8 +13,6 @@ export async function GET() {
 
     const formattedBanners = newsBanners.map(banner => ({
       _id: banner._id.toString(),
-      title: banner.title,
-      content: banner.content,
       imageUrl: banner.imageUrl,
       startDate: banner.startDate.toISOString(),
       endDate: banner.endDate.toISOString(),
@@ -38,12 +36,26 @@ export async function POST(request: Request) {
     await connectDB()
     const body = await request.json()
 
-    const newsBanner = await NewsBanner.create(body)
+    // Validate required fields
+    if (!body.imageUrl || !body.startDate || !body.endDate) {
+      return NextResponse.json(
+        { error: 'Image URL, start date, and end date are required' },
+        { status: 400 }
+      )
+    }
+
+    const newsBanner = await NewsBanner.create({
+      imageUrl: body.imageUrl,
+      startDate: body.startDate,
+      endDate: body.endDate,
+      status: body.status || 'Active'
+    })
+
     return NextResponse.json(newsBanner, { status: 201 })
   } catch (error) {
     console.error('Failed to create news banner:', error)
     return NextResponse.json(
-      { error: 'Failed to create news banner' },
+      { error: error instanceof Error ? error.message : 'Failed to create news banner' },
       { status: 500 }
     )
   }

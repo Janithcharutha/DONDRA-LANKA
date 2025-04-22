@@ -106,7 +106,12 @@ export async function PUT(
 
     const updatedBanner = await NewsBanner.findByIdAndUpdate(
       id,
-      { ...body },
+      {
+        imageUrl: body.imageUrl,
+        startDate: body.startDate,
+        endDate: body.endDate,
+        status: body.status
+      },
       { new: true, runValidators: true }
     )
 

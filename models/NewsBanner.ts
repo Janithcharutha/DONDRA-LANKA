@@ -1,19 +1,26 @@
 import mongoose from 'mongoose'
 
 const newsBannerSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  content: { type: String, required: true },
-  imageUrl: { type: String },
-  startDate: { type: Date, required: true },
-  endDate: { type: Date, required: true },
+  imageUrl: {
+    type: String,
+    required: true
+  },
+  startDate: {
+    type: Date,
+    required: true
+  },
+  endDate: {
+    type: Date,
+    required: true
+  },
   status: {
     type: String,
     enum: ['Active', 'Scheduled', 'Expired'],
-    default: 'Active',
-    required: true
+    default: 'Active'
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  strict: true // This ensures no additional fields are allowed
 })
 
 const NewsBanner = mongoose.models.NewsBanner || mongoose.model('NewsBanner', newsBannerSchema)
