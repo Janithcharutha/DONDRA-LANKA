@@ -148,7 +148,7 @@ export default function NewProductPage() {
           >
             <option value="Dry Fish">Dry Fish</option>
             <option value="Sour Fish Curry">Sour Fish Curry</option>
-            <option value="sri lanka spices">sri lanka spices</option>
+            <option value="Sri Lanka Spices">Sri Lanka Spices</option>
           </select>
         </div>
         <div>

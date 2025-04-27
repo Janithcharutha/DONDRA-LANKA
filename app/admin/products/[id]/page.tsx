@@ -198,9 +198,9 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                 required
               >
                 <option value="">Select Category</option>
-                <option value="Tuna">Dry Fish</option>
-                <option value="Fish">Sour Fish Curry</option>
-                <option value="Shellfish">sri lanka spices</option>
+                <option value="DRY FISH">DRY FISH</option>
+                <option value="SOUR FISH CURRY">SOUR FISH CURRY</option>
+                <option value="SRI LANKA SPICES">SRI LANKA SPICES</option>
               </select>
             </div>
             <div>

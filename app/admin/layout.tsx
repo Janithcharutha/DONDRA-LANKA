@@ -18,22 +18,44 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   // Check if the current route is an auth route
   const isAuthRoute = pathname.includes("/admin/auth/")
 
-  // // Redirect to login if not authenticated and not on an auth route
-  // useEffect(() => {
-  //   if (!isAuthenticated && !isAuthRoute) {
-  //     router.push("/admin/auth/login")
-  //   }
-  // }, [isAuthenticated, isAuthRoute, router])
+  // Redirect to login if not authenticated and not on an auth route
+  useEffect(() => {
+    // Check token expiration
+    const token = localStorage.getItem('token')
+    if (!token && !isAuthRoute) {
+      router.push("/admin/auth/login")
+      return
+    }
 
-  // // If on auth route, render children directly without admin layout
-  // if (isAuthRoute) {
-  //   return <>{children}</>
-  // }
+    // Optional: Validate token with backend
+    const validateToken = async () => {
+      try {
+        const response = await fetch('/api/auth/validate', {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        if (!response.ok) {
+          logout()
+        }
+      } catch (error) {
+        console.error('Token validation error:', error)
+        logout()
+      }
+    }
 
-  // // If not authenticated and not on auth route, don't render anything while redirecting
-  // if (!isAuthenticated) {
-  //   return null
-  // }
+    if (token && !isAuthRoute) {
+      validateToken()
+    }
+  }, [isAuthenticated, isAuthRoute, router])
+
+  // If on auth route, render children directly without admin layout
+  if (isAuthRoute) {
+    return <>{children}</>
+  }
+
+  // If not authenticated and not on auth route, don't render anything while redirecting
+  if (!isAuthenticated) {
+    return null
+  }
 
   const isActive = (path: string) => {
     return pathname === path
