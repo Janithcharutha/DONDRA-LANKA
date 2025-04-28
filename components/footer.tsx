@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { Facebook, Instagram, Twitter, Youtube } from "lucide-react"
-
+import { SiWhatsapp } from "react-icons/si"
 export default function Footer() {
   return (
     <footer className="bg-[#3aaa9e] text-white">
@@ -43,10 +43,19 @@ export default function Footer() {
               Providing the freshest tuna and seafood products across Sri Lanka. Convenient, fresh, and sustainable.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="text-white hover:text-white/80">
+              <a href="https://www.facebook.com/dondralanka" className="text-white hover:text-white/80">
                 <Facebook className="h-5 w-5" />
                 <span className="sr-only">Facebook</span>
               </a>
+              <a
+  href="https://wa.me/94782672914?text=Hello%2C%20I%20have%20a%20question%20about%20your%20products."
+  target="_blank"
+  rel="noopener noreferrer"
+  className="text-white hover:text-white/80"
+>
+  <SiWhatsapp className="h-5 w-5" />
+  <span className="sr-only">WhatsApp</span>
+</a>
               <a href="#" className="text-white hover:text-white/80">
                 <Instagram className="h-5 w-5" />
                 <span className="sr-only">Instagram</span>
@@ -59,6 +68,9 @@ export default function Footer() {
                 <Youtube className="h-5 w-5" />
                 <span className="sr-only">YouTube</span>
               </a>
+
+
+
             </div>
           </div>
 
@@ -115,8 +127,8 @@ export default function Footer() {
             <address className="not-italic text-white/80">
               <p className="mb-2">Devinuwara </p>
               <p className="mb-2">Matara, Sri Lanka</p>
-              <p className="mb-2">Phone: +94 77 432 1384</p>
-              <p className="mb-4">Email: info@DONDRA-LANKA</p>
+              <p className="mb-2">Phone: 070 560 0784</p>
+              <p className="mb-4">Email: dondralankafoods@gmail.com</p>
             </address>
           </div>
         </div>

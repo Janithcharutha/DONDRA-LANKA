@@ -1,22 +1,19 @@
 import { NextResponse } from 'next/server'
+import bcrypt from 'bcryptjs'
 import connectDB from '@/lib/mongodb'
 import User from '@/models/User'
 import { sign } from 'jsonwebtoken'
+
+interface LoginError extends Error {
+  code?: string;
+  message: string;
+}
 
 export async function POST(request: Request) {
   try {
     await connectDB()
     const { email, password } = await request.json()
 
-    // Validate input
-    if (!email || !password) {
-      return NextResponse.json(
-        { error: 'Email and password are required' },
-        { status: 400 }
-      )
-    }
-
-    // Find user
     const user = await User.findOne({ email })
     if (!user) {
       return NextResponse.json(
@@ -25,8 +22,7 @@ export async function POST(request: Request) {
       )
     }
 
-    // Check password
-    const isMatch = await user.comparePassword(password)
+    const isMatch = await bcrypt.compare(password, user.password)
     if (!isMatch) {
       return NextResponse.json(
         { error: 'Invalid credentials' },
@@ -34,14 +30,12 @@ export async function POST(request: Request) {
       )
     }
 
-    // Create JWT token
     const token = sign(
-      { userId: user._id },
+      { userId: user._id, role: user.role },
       process.env.JWT_SECRET || 'fallback-secret',
       { expiresIn: '7d' }
     )
 
-    // Return user data and token
     return NextResponse.json({
       user: {
         id: user._id,
@@ -52,9 +46,10 @@ export async function POST(request: Request) {
       token
     })
   } catch (error) {
-    console.error('Login error:', error)
+    const loginError = error as LoginError
+    console.error('Login error:', loginError)
     return NextResponse.json(
-      { error: 'Authentication failed' },
+      { error: loginError.message || 'Authentication failed' },
       { status: 500 }
     )
   }

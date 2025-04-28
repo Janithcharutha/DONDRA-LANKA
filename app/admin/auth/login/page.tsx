@@ -1,45 +1,62 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { Eye, EyeOff, Lock, Mail } from "lucide-react"
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { Eye, EyeOff, Lock, Mail } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { useAuth } from "@/hooks/use-auth"
+import { useAuth } from '@/hooks/use-auth'
+import { toast } from '@/components/ui/use-toast'
+
+interface ApiError {
+  message: string;
+}
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
   const router = useRouter()
   const { login } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError("")
-    setIsLoading(true)
+    setLoading(true)
+    setError('')
 
     try {
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      })
 
-      // Simple validation
-      if (!email || !password) {
-        throw new Error("Please fill in all fields")
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed')
       }
 
-      // Call login function from auth context
-      await login(email, password)
-      router.push("/admin")
-    } catch (err: any) {
-      setError(err.message || "Failed to login. Please check your credentials.")
+      // Store auth data
+      localStorage.setItem('token', data.token)
+      localStorage.setItem('user', JSON.stringify(data.user))
+
+      // Redirect to admin dashboard
+      router.push('/admin')
+    } catch (err) {
+      const error = err as Error | ApiError
+      console.error('Login error:', error)
+      setError(error.message)
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      })
     } finally {
-      setIsLoading(false)
+      setLoading(false)
     }
   }
 
@@ -73,7 +90,7 @@ export default function LoginPage() {
                   className="pl-10"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  disabled={isLoading}
+                  disabled={loading}
                   required
                 />
               </div>
@@ -92,7 +109,7 @@ export default function LoginPage() {
                   className="pl-10"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  disabled={isLoading}
+                  disabled={loading}
                   required
                 />
                 <button
@@ -124,8 +141,8 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <Button type="submit" className="w-full bg-[#00957a] hover:bg-[#007a64] text-white" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign in"}
+            <Button type="submit" className="w-full bg-[#00957a] hover:bg-[#007a64] text-white" disabled={loading}>
+              {loading ? "Signing in..." : "Sign in"}
             </Button>
           </form>
 
