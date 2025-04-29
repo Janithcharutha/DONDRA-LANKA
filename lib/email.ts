@@ -23,9 +23,7 @@ export async function sendPasswordResetEmail(email: string, resetToken: string) 
   console.log('Starting email send process...')
 
   try {
-    // Verify connection configuration
-    const verifyResult = await transporter.verify()
-    console.log('SMTP connection verified:', verifyResult)
+    await transporter.verify()
   } catch (error) {
     const verifyError = error as EmailError
     console.error('SMTP Verification Error:', {
@@ -36,7 +34,9 @@ export async function sendPasswordResetEmail(email: string, resetToken: string) 
     throw new Error(`SMTP Verification failed: ${verifyError.message}`)
   }
 
-  const resetUrl = `http://localhost:3000/admin/auth/reset-password?token=${resetToken}`
+  // Use environment variable or fallback for base URL
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL || 'http://localhost:3000'
+  const resetUrl = `${baseUrl}/admin/auth/reset-password?token=${resetToken}`
 
   const mailOptions = {
     from: '"DONDRA-LANKA Support" <charuthajanith@gmail.com>',

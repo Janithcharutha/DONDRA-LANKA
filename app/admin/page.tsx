@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/hooks/use-auth"
 import Link from "next/link"
 import { Package, Tags, TrendingUp, Users, Newspaper } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
@@ -9,6 +11,7 @@ import type { HotDeal } from "@/types/hot-deal"
 import type { NewsBanner } from "@/types/news-banner"
 
 export default function AdminDashboard() {
+  const { logout, user } = useAuth()
   const [totalProducts, setTotalProducts] = useState<number>(0)
   const [activeHotDeals, setActiveHotDeals] = useState<number>(0)
   const [activeNewsBanners, setActiveNewsBanners] = useState<number>(0)
@@ -116,6 +119,20 @@ export default function AdminDashboard() {
       link: "/admin/news-banners",
     },
   ]
+
+  useEffect(() => {
+    const handleTabClose = () => {
+      if (user) {
+        logout()
+      }
+    }
+
+    window.addEventListener('beforeunload', handleTabClose)
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleTabClose)
+    }
+  }, [user, logout])
 
   return (
     <div>

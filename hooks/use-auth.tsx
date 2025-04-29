@@ -118,10 +118,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const logout = () => {
-    localStorage.removeItem('user')
-    localStorage.removeItem('token')
-    setUser(null)
-    router.push('/admin/auth/login')
+    try {
+      // Clear auth state
+      setUser(null)
+      
+      // Clear stored credentials
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      
+      // Clear any auth cookies
+      document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
+      
+      // Redirect to login
+      router.push('/admin/auth/login')
+    } catch (error) {
+      console.error('Logout error:', error)
+    }
   }
 
   const register = async (name: string, email: string, password: string) => {
@@ -145,6 +157,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  // Add auto-logout effect
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden' && user) {
+        logout()
+      }
+    }
+
+    const handleBeforeUnload = () => {
+      if (user) {
+        logout()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('beforeunload', handleBeforeUnload)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+    }
+  }, [user])
+
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">
       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
@@ -164,4 +199,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   )
 }
 
-export const useAuth = () => useContext(AuthContext)
+export function useAuth() {
+  const context = useContext(AuthContext)
+  const router = useRouter() // Add this line
+
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider')
+  }
+
+  const { user, isAuthenticated, login, register } = context
+
+  return {
+    logout: async () => {
+      try {
+        // Clear stored credentials
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+        
+        // Clear any auth cookies
+        document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
+        
+        // Call logout API
+        await fetch('/api/auth/logout', {
+          method: 'POST'
+        })
+        
+        // Redirect to login
+        router.push('/admin/auth/login')
+      } catch (error) {
+        console.error('Logout error:', error)
+      }
+    },
+    user,
+    isAuthenticated,
+    login,
+    register
+  }
+}
