@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 
 export default function AboutSection() {
@@ -21,37 +22,16 @@ export default function AboutSection() {
               <Link href="/about">Learn More About Us</Link>
             </Button>
           </div>
+
           <div className="order-1 md:order-2 bg-[#c2f8e9] p-8 rounded-lg flex justify-center">
-            <div className="w-64 h-64 relative">
-              <svg
-                viewBox="0 0 100 100"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-full h-full text-[#3aaa9e]"
-              >
-                <path
-                  d="M80 50C80 50 65 35 50 35C35 35 20 50 20 50C20 50 35 65 50 65C65 65 80 50 80 50Z"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M20 50H10"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M90 40L80 50L90 60"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <circle cx="45" cy="45" r="3" fill="currentColor" stroke="currentColor" strokeWidth="1" />
-              </svg>
+            <div className="relative w-full max-w-xl">
+              <Image
+                src="/about.png"
+                alt="About DONDRA-LANKA"
+                width={800}
+                height={800}
+                className="w-full h-auto rounded-lg"
+              />
             </div>
           </div>
         </div>

@@ -14,7 +14,6 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col">
       <CategorySlider />
-      {/* <ProductCategoryTabs /> */}
       <NewsBanners />
       <Hero />
       <FeaturedProducts />

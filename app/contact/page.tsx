@@ -30,7 +30,13 @@ export default function ContactPage() {
               <Phone className="w-6 h-6 text-[#3aaa9e] mt-0.5" />
               <div>
                 <h3 className="font-medium text-gray-900">Phone</h3>
-                <p className="text-gray-600">070 560 0784</p>
+                <a href="tel:+94705600784" className="text-gray-600 hover:underline">
+  +94 70 560 0784
+</a>
+<br></br><a href="tel:+94 78 267 2914" className="text-gray-600 hover:underline">
++94 78 267 2914
+</a>
+
               </div>
             </div>
 
@@ -38,7 +44,10 @@ export default function ContactPage() {
               <Mail className="w-6 h-6 text-[#3aaa9e] mt-0.5" />
               <div>
                 <h3 className="font-medium text-gray-900">Email</h3>
-                <p className="text-gray-600">dondralankafoods@gmail.com</p>
+                <a href="mailto:dondralankafoods@gmail.com" className="text-gray-600 hover:underline">
+  dondralankafoods@gmail.com
+</a>
+
               </div>
             </div>
 

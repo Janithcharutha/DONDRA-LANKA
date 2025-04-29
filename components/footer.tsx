@@ -3,7 +3,7 @@ import { Facebook, Instagram, Twitter, Youtube } from "lucide-react"
 import { SiWhatsapp } from "react-icons/si"
 export default function Footer() {
   return (
-    <footer className="bg-[#3aaa9e] text-white">
+    <footer className="bg-[#211C84] text-white">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
@@ -127,7 +127,24 @@ export default function Footer() {
             <address className="not-italic text-white/80">
               <p className="mb-2">Devinuwara </p>
               <p className="mb-2">Matara, Sri Lanka</p>
-              <p className="mb-2">Phone: 070 560 0784</p>
+              <div className="mb-4 space-y-2">
+  <p>
+    <span className="text-white">Phone: </span>
+    <a href="tel:+94705600784" className="text-white hover:underline">
+      +94 70 560 0784
+    </a>
+    
+  </p>
+  <p>
+    <a href="tel:+94782672914" className="text-white hover:underline">
+    +94 78 267 2914
+    </a>
+  </p>
+
+</div>
+
+
+
               <p className="mb-4">Email: dondralankafoods@gmail.com</p>
             </address>
           </div>
