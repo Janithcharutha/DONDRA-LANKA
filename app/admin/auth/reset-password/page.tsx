@@ -23,19 +23,27 @@ export default function ResetPasswordPage() {
       }
 
       try {
+        // Clean the token - remove any trailing commas
+        const cleanToken = token.replace(/,+$/, '')
+        
         const response = await fetch('/api/auth/validate-reset-token', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token })
+          headers: { 
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ token: cleanToken })
         })
 
+        const data = await response.json()
+
         if (!response.ok) {
-          throw new Error('Invalid or expired reset link')
+          throw new Error(data.error || 'Invalid or expired reset link')
         }
 
         setValidToken(true)
       } catch (err) {
-      //  setError(err.message)
+        setError(err instanceof Error ? err.message : 'Token validation failed')
+        console.error('Token validation error:', err)
       }
     }
 
@@ -54,21 +62,30 @@ export default function ResetPasswordPage() {
     setError('')
 
     try {
+      // Clean the token here too
+      const cleanToken = token?.replace(/,+$/, '')
+
       const response = await fetch('/api/auth/reset-password', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, password })
+        headers: { 
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          token: cleanToken, 
+          password 
+        })
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
-        const data = await response.json()
         throw new Error(data.error || 'Failed to reset password')
       }
 
-      // Redirect to login with success message
       router.push('/admin/auth/login?reset=success')
     } catch (err) {
-    //   setError(err.message)
+      setError(err instanceof Error ? err.message : 'Failed to reset password')
+      console.error('Reset password error:', err)
     } finally {
       setLoading(false)
     }
