@@ -18,7 +18,7 @@ export default function Why() {
       number: 1,
       title: "Sourcing and testing our Products",
       description:
-        "At DONDRA-LANKA, we prioritize sustainable sourcing and rigorous quality checks to deliver the finest dry fish, authentic Sri Lankan spices, and flavorful Sour Fish Curry, ensuring a premium experience for our customers.",
+        "At DONDRA-LANKA, we prioritize sustainable sourcing and rigorous quality checks to deliver the finest dry fish, authentic Sri Lankan spices, and flavorful Fish Ambul Thiyal, ensuring a premium experience for our customers.",
       animation: "/animations/sourcing.json",
     },
     {
@@ -32,7 +32,7 @@ export default function Why() {
       number: 3,
       title: "Delivering the Products to You",
       description:
-        "At DONDRA-LANKA, we ensure quick and secure delivery of our dry fish, spices, and Sour Fish Curry so they reach you fresh and full of authentic Sri Lankan taste.",
+        "At DONDRA-LANKA, we ensure quick and secure delivery of our dry fish, spices, and Fish Ambul Thiyal so they reach you fresh and full of authentic Sri Lankan taste.",
       animation: "/animations/delivery.json",
     },
   ]

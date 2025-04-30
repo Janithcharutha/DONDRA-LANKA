@@ -20,6 +20,19 @@ interface LeanHotDeal {
   __v: number;
 }
 
+// Add helper function at the top level
+function calculateTimeLeft(endDate: Date): string {
+  const now = new Date()
+  const diff = endDate.getTime() - now.getTime()
+  
+  if (diff <= 0) return 'Expired'
+  
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+  
+  return `${days}d ${hours}h`
+}
+
 export async function GET(
   request: Request,
   context: { params: Promise<{ id: string }> }
@@ -60,6 +73,7 @@ export async function GET(
       startDate: hotDeal.startDate.toISOString(),
       endDate: hotDeal.endDate.toISOString(),
       status: hotDeal.status as HotDealType['status'],
+      timeLeft: calculateTimeLeft(hotDeal.endDate), // Add this line
       createdAt: hotDeal.createdAt.toISOString(),
       updatedAt: hotDeal.updatedAt.toISOString()
     }
@@ -104,6 +118,50 @@ export async function DELETE(
     console.error('Failed to delete hot deal:', error)
     return NextResponse.json(
       { error: 'Failed to delete hot deal' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function PUT(
+  request: Request,
+  context: { params: { id: string } }
+) {
+  try {
+    const { id } = context.params
+
+    if (!isValidObjectId(id)) {
+      return NextResponse.json(
+        { error: 'Invalid hot deal ID' },
+        { status: 400 }
+      )
+    }
+
+    await connectDB()
+    
+    const body = await request.json()
+    const updatedHotDeal = await HotDeal.findByIdAndUpdate(
+      id,
+      {
+        ...body,
+        startDate: new Date(body.startDate),
+        endDate: new Date(body.endDate)
+      },
+      { new: true }
+    ).populate('product')
+
+    if (!updatedHotDeal) {
+      return NextResponse.json(
+        { error: 'Hot deal not found' },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json(updatedHotDeal)
+  } catch (error) {
+    console.error('Failed to update hot deal:', error)
+    return NextResponse.json(
+      { error: 'Failed to update hot deal' },
       { status: 500 }
     )
   }

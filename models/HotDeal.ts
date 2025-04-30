@@ -1,9 +1,22 @@
 import mongoose from 'mongoose'
+import type { HotDealDocument, HotDealStatus } from '@/types/hot-deal'
 
 const hotDealSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: { type: String, required: true },
-  product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+  product: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Product', 
+    required: true,
+    validate: {
+      validator: async function(value: mongoose.Types.ObjectId) {
+        const Product = mongoose.model('Product')
+        const exists = await Product.exists({ _id: value })
+        return exists !== null
+      },
+      message: 'Referenced product does not exist'
+    }
+  },
   originalPrice: { type: Number, required: true },
   discountedPrice: { type: Number, required: true },
   discount: { type: String, required: true },
@@ -16,28 +29,9 @@ const hotDealSchema = new mongoose.Schema({
     required: true
   }
 }, {
-  timestamps: true,
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true }
+  timestamps: true
 })
 
-// Add virtual field for timeLeft
-hotDealSchema.virtual('timeLeft').get(function() {
-  const now = new Date()
-  const diff = this.endDate.getTime() - now.getTime()
-  const days = Math.ceil(diff / (1000 * 60 * 60 * 24))
+const HotDeal = mongoose.models.HotDeal || mongoose.model<HotDealDocument>('HotDeal', hotDealSchema)
 
-  if (days < 0) return 'Expired'
-  if (days === 0) return 'Ends today'
-  if (days === 1) return '1 day'
-  return `${days} days`
-})
-
-// Add pre-save hook for debugging
-hotDealSchema.pre('save', function(next) {
-  console.log('Saving hot deal:', this)
-  next()
-})
-
-const HotDeal = mongoose.models.HotDeal || mongoose.model('HotDeal', hotDealSchema)
 export default HotDeal

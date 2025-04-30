@@ -90,7 +90,7 @@ export default function NewProductPage() {
         name: formData.get('name'),
         category: formData.get('category'),
         price: Number(formData.get('price')),
-        stock: Number(formData.get('stock')),
+        // stock: Number(formData.get('stock')),
         description: formData.get('description'),
         minOrder: formData.get('minOrder'),
         images: images,
@@ -147,7 +147,7 @@ export default function NewProductPage() {
             required
           >
             <option value="Dry Fish">Dry Fish</option>
-            <option value="Sour Fish Curry">Sour Fish Curry</option>
+            <option value="Fish Ambul Thiyal">Fish Ambul Thiyal</option>
             <option value="Sri Lanka Spices">Sri Lanka Spices</option>
           </select>
         </div>
@@ -155,18 +155,18 @@ export default function NewProductPage() {
           <label className="block mb-2">Price</label>
           <Input type="number" name="price" required />
         </div>
-        <div>
+        {/* <div>
           <label className="block mb-2">Stock</label>
           <Input type="number" name="stock" required />
-        </div>
-        <div>
+        </div> */}
+        {/* <div>
           <label className="block mb-2">Description</label>
           <Input name="description" />
-        </div>
-        <div>
+        </div> */}
+        {/* <div>
           <label className="block mb-2">Minimum Order Quantity</label>
           <Input type="number" name="minOrder" />
-        </div>
+        </div> */}
         <div>
           <label className="block mb-2">Product Images</label>
           <div className="space-y-4">

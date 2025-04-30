@@ -199,7 +199,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
               >
                 <option value="">Select Category</option>
                 <option value="DRY FISH">DRY FISH</option>
-                <option value="SOUR FISH CURRY">SOUR FISH CURRY</option>
+                <option value="Fish Ambul Thiyal">Fish Ambul Thiyal</option>
                 <option value="SRI LANKA SPICES">SRI LANKA SPICES</option>
               </select>
             </div>
@@ -228,7 +228,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                 onChange={handleInputChange}
               />
             </div>
-            <div>
+            {/* <div>
               <label htmlFor="stock" className="block text-sm font-medium text-gray-700 mb-1">
                 Stock Quantity
               </label>
@@ -240,13 +240,13 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                 onChange={handleInputChange}
                 required
               />
-            </div>
-            <div>
+            </div> */}
+            {/* <div>
               <label htmlFor="minOrder" className="block text-sm font-medium text-gray-700 mb-1">
                 Minimum Order
               </label>
               <Input id="minOrder" name="minOrder" value={product?.minOrder || ""} onChange={handleInputChange} required />
-            </div>
+            </div> */}
           </div>
         </div>
 

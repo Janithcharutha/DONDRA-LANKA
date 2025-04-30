@@ -192,7 +192,14 @@ export default function ProductDetail({ id }: { id: string }) {
               </span>
             </div>
 
-            <p className="text-gray-600 mb-6">Minimum Order: {product.minOrder}</p>
+            {/* Enhanced Minimum Order Display */}
+            <div className="mb-6 mt-6">
+    <h3 className="text-lg font-semibold mb-2">Minimum Order - 2</h3>
+  
+    <p className="text-sm text-gray-500 mt-1">
+      This is the minimum quantity required for ordering
+    </p>
+  </div>
 
             {/* Type Selection */}
             {product.types && product.types.length > 0 && (
@@ -246,43 +253,7 @@ export default function ProductDetail({ id }: { id: string }) {
         </div>
       </div>
 
-      {/* Product Description */}
-      <div className="mt-12 bg-white rounded-lg shadow-sm p-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Product Description</h2>
-        <div className="prose max-w-none">
-          <p>{product.description}</p>
-          {product.nutritionalInfo && product.nutritionalInfo.length > 0 && (
-            <>
-              <h3 className="text-xl font-semibold mt-4 mb-2">Nutritional Information</h3>
-              <ul className="list-disc pl-5 space-y-1">
-                {product.nutritionalInfo.map((info, index) => (
-                  <li key={index}>{info}</li>
-                ))}
-              </ul>
-            </>
-          )}
-          {product.storageInstructions && (
-            <>
-              <h3 className="text-xl font-semibold mt-4 mb-2">Storage Instructions</h3>
-              <p>{product.storageInstructions}</p>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Category Sections */}
-      {/* <CategorySection 
-        category="sour-fish-curry" 
-        title="SOUR FISH CURRY" 
-      />
-      <CategorySection 
-        category="sri-lanka-spices" 
-        title="SRI LANKA SPICES" 
-      />
-      <CategorySection 
-        category="dry-fish" 
-        title="DRY FISH" 
-      /> */}
+     
 
       {/* Related Products */}
       {relatedProducts.length > 0 && (

@@ -10,9 +10,22 @@ type CategoryProducts = {
   [key: string]: Product[]
 }
 
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'In Stock':
+      return 'bg-green-100 text-green-800'
+    case 'Low Stock':
+      return 'bg-yellow-100 text-yellow-800'
+    case 'Out of Stock':
+      return 'bg-red-100 text-red-800'
+    default:
+      return 'bg-gray-100 text-gray-800'
+  }
+}
+
 export default function ProductsPage() {
   const [categoryProducts, setCategoryProducts] = useState<CategoryProducts>({
-    'SOUR FISH CURRY': [],
+    'Fish Ambul Thiyal': [],
     'SRI LANKA SPICES': [],
     'DRY FISH': []
   })
@@ -93,12 +106,18 @@ export default function ProductsPage() {
                   key={product._id}
                   className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                 >
-                  <div className="h-48 bg-[#c2f8e9] flex items-center justify-center">
+                  <div className="h-48 bg-[#c2f8e9] flex items-center justify-center relative">
                     <img
                       src={product.images[0] || "/placeholder.svg"}
                       alt={product.name}
                       className="h-full w-full object-cover"
                     />
+                    {/* Add status badge */}
+                    <span
+                      className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(product.status)}`}
+                    >
+                      {product.status}
+                    </span>
                   </div>
                   <div className="p-6">
                     <h3 className="text-xl font-semibold mb-2 text-[#3aaa9e]">{product.name}</h3>

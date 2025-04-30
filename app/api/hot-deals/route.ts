@@ -1,46 +1,57 @@
 import { NextResponse } from 'next/server'
 import connectDB from '@/lib/mongodb'
 import HotDeal from '@/models/HotDeal'
-import Product from '@/models/Product'
-import type { LeanHotDealDoc } from '@/types/mongodb'
 import { isValidObjectId } from 'mongoose'
+import type { HotDeal as IHotDeal, HotDealDocument } from '@/types/hot-deal'
+
+function calculateTimeLeft(endDate: Date): string {
+  const now = new Date()
+  const diff = endDate.getTime() - now.getTime()
+  
+  if (diff <= 0) return 'Expired'
+  
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+  
+  return `${days}d ${hours}h`
+}
 
 export async function GET() {
   try {
     await connectDB()
-    console.log('Fetching hot deals from database...')
-
-    const hotDeals = (await HotDeal.find()
-      .populate({
-        path: 'product',
-        select: '_id name images price category',
-        model: Product
-      })
+    
+    const hotDeals = await HotDeal.find()
+      .populate('product')
       .sort({ createdAt: -1 })
-      .lean()) as LeanHotDealDoc[]
+      .lean() as unknown as HotDealDocument[]
 
-    console.log('Found hot deals:', hotDeals.length)
+    if (!hotDeals) {
+      return NextResponse.json([])
+    }
 
-    const formattedDeals = hotDeals.map(deal => ({
-      _id: deal._id.toString(),
-      name: deal.name,
-      description: deal.description,
-      product: {
-        _id: deal.product._id.toString(),
-        name: deal.product.name,
-        images: deal.product.images,
-        price: deal.product.price,
-        category: deal.product.category
-      },
-      originalPrice: deal.originalPrice,
-      discountedPrice: deal.discountedPrice,
-      discount: deal.discount,
-      startDate: deal.startDate.toISOString(),
-      endDate: deal.endDate.toISOString(),
-      status: deal.status,
-      createdAt: deal.createdAt.toISOString(),
-      updatedAt: deal.updatedAt.toISOString()
-    }))
+    const formattedDeals: IHotDeal[] = hotDeals
+      .filter(deal => deal?.product)
+      .map(deal => ({
+        _id: deal._id.toString(),
+        name: deal.name,
+        description: deal.description,
+        product: {
+          _id: deal.product._id.toString(),
+          name: deal.product.name,
+          images: deal.product.images || [],
+          price: deal.product.price,
+          status: deal.product.status
+        },
+        originalPrice: deal.originalPrice,
+        discountedPrice: deal.discountedPrice,
+        discount: deal.discount,
+        startDate: deal.startDate.toISOString(),
+        endDate: deal.endDate.toISOString(),
+        status: deal.status,
+        timeLeft: calculateTimeLeft(deal.endDate),
+        createdAt: deal.createdAt.toISOString(),
+        updatedAt: deal.updatedAt.toISOString()
+      }))
 
     return NextResponse.json(formattedDeals)
   } catch (error) {
@@ -57,48 +68,65 @@ export async function POST(request: Request) {
     await connectDB()
 
     const body = await request.json()
+    const { 
+      name, 
+      description, 
+      product, 
+      originalPrice,
+      discountedPrice,
+      discount,
+      startDate,
+      endDate,
+      status 
+    } = body
 
     // Validate required fields
-    const requiredFields = [
-      'name', 
-      'description', 
-      'product', 
-      'originalPrice',
-      'discountedPrice',
-      'discount',
-      'startDate',
-      'endDate'
-    ]
-
-    for (const field of requiredFields) {
-      if (!body[field]) {
-        return NextResponse.json(
-          { error: `Missing required field: ${field}` },
-          { status: 400 }
-        )
-      }
+    if (!name || !product || !originalPrice || !discountedPrice || !discount || !startDate || !endDate) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      )
     }
 
     // Validate product ID
-    if (!isValidObjectId(body.product)) {
+    if (!isValidObjectId(product)) {
       return NextResponse.json(
         { error: 'Invalid product ID' },
         { status: 400 }
       )
     }
 
-    // Create new hot deal
     const hotDeal = await HotDeal.create({
-      ...body,
-      status: 'Active', // Default status
-      startDate: new Date(body.startDate),
-      endDate: new Date(body.endDate)
+      name,
+      description,
+      product,
+      originalPrice,
+      discountedPrice,
+      discount,
+      startDate: new Date(startDate),
+      endDate: new Date(endDate),
+      status: status || 'Active'
     })
 
-    // Populate product details
     await hotDeal.populate('product')
 
-    return NextResponse.json(hotDeal, { status: 201 })
+    const formattedDeal: IHotDeal = {
+      _id: hotDeal._id.toString(),
+      name: hotDeal.name,
+      description: hotDeal.description,
+      product: hotDeal.product,
+      originalPrice: hotDeal.originalPrice,
+      discountedPrice: hotDeal.discountedPrice,
+      discount: hotDeal.discount,
+      startDate: hotDeal.startDate.toISOString(),
+      endDate: hotDeal.endDate.toISOString(),
+      status: hotDeal.status as IHotDeal['status'],
+      timeLeft: calculateTimeLeft(hotDeal.endDate),
+      createdAt: hotDeal.createdAt.toISOString(),
+      updatedAt: hotDeal.updatedAt.toISOString()
+    }
+
+    return NextResponse.json(formattedDeal)
   } catch (error) {
     console.error('Failed to create hot deal:', error)
     return NextResponse.json(
@@ -106,15 +134,4 @@ export async function POST(request: Request) {
       { status: 500 }
     )
   }
-}
-
-function getTimeLeft(endDate: Date): string {
-  const now = new Date()
-  const diff = endDate.getTime() - now.getTime()
-  const days = Math.ceil(diff / (1000 * 60 * 60 * 24))
-
-  if (days < 0) return 'Expired'
-  if (days === 0) return 'Ends today'
-  if (days === 1) return '1 day'
-  return `${days} days`
 }

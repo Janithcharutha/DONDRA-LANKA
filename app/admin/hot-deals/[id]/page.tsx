@@ -120,38 +120,44 @@ export default function EditHotDealPage({ params }: { params: Promise<{ id: stri
       const startDate = new Date(formData.get('startDate') as string).toISOString()
       const endDate = new Date(formData.get('endDate') as string).toISOString()
       
-      const response = await fetch('/api/hot-deals', {
-        method: 'POST',
+      const hotDealData = {
+        name: formData.get('name'),
+        description: formData.get('description'),
+        product: formData.get('product'),
+        originalPrice: Number(formData.get('originalPrice')),
+        discountedPrice: Number(formData.get('discountedPrice')),
+        discount: formData.get('discount'),
+        startDate,
+        endDate,
+      }
+
+      // Use PUT for editing, POST for new hot deal
+      const method = id === 'new' ? 'POST' : 'PUT'
+      const url = id === 'new' ? '/api/hot-deals' : `/api/hot-deals/${id}`
+
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          name: formData.get('name'),
-          description: formData.get('description'),
-          product: formData.get('product'),
-          originalPrice: Number(formData.get('originalPrice')),
-          discountedPrice: Number(formData.get('discountedPrice')),
-          discount: formData.get('discount'),
-          startDate,
-          endDate,
-        }),
+        body: JSON.stringify(hotDealData),
       })
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to create hot deal')
+        throw new Error(errorData.error || 'Failed to save hot deal')
       }
 
       toast({
         title: "Success",
-        description: "Hot deal created successfully",
+        description: id === 'new' ? "Hot deal created successfully" : "Hot deal updated successfully",
       })
       router.push('/admin/hot-deals')
     } catch (error) {
       console.error('Error:', error)
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to create hot deal",
+        description: error instanceof Error ? error.message : "Failed to save hot deal",
         variant: "destructive",
       })
     } finally {

@@ -1,13 +1,15 @@
-'use client'
+"use client"
+
+export const dynamic = 'force-dynamic'
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/hooks/use-auth"
 import Link from "next/link"
-import { Package, Tags, TrendingUp, Users, Newspaper } from "lucide-react"
+import { Package, Tags, TrendingUp, Users, Newspaper, Trash2 } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import type { Product } from "@/types/product"
-import type { HotDeal } from "@/types/hot-deal"
+import type { HotDeal as HotDealType } from '@/types/hot-deal'
 import type { NewsBanner } from "@/types/news-banner"
 
 export default function AdminDashboard() {
@@ -47,23 +49,41 @@ export default function AdminDashboard() {
     const fetchStats = async () => {
       try {
         // Fetch total products
-        const productsResponse = await fetch('/api/products')
+        const productsResponse = await fetch('/api/products', {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache',
+          }
+        })
         if (!productsResponse.ok) throw new Error('Failed to fetch products')
         const productsData = await productsResponse.json()
         setTotalProducts(productsData.length)
 
         // Fetch and filter active hot deals
-        const hotDealsResponse = await fetch('/api/hot-deals')
-        if (!hotDealsResponse.ok) throw new Error('Failed to fetch hot deals')
+        const hotDealsResponse = await fetch('/api/hot-deals', {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache'
+          }
+        })
+
+        if (!hotDealsResponse.ok) {
+          throw new Error('Failed to fetch hot deals')
+        }
+
         const hotDealsData = await hotDealsResponse.json()
         
-        const activeDeals = hotDealsData.filter((deal: HotDeal) => {
+        if ('error' in hotDealsData) {
+          throw new Error(hotDealsData.error)
+        }
+
+        const activeDeals = hotDealsData.filter((deal: HotDealType) => {
           const now = new Date()
           const startDate = new Date(deal.startDate)
           const endDate = new Date(deal.endDate)
           return now >= startDate && now <= endDate && deal.status === 'Active'
         })
-        
+
         setActiveHotDeals(activeDeals.length)
 
         // Fetch and filter active news banners
@@ -133,6 +153,36 @@ export default function AdminDashboard() {
       window.removeEventListener('beforeunload', handleTabClose)
     }
   }, [user, logout])
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this product?')) return
+
+    try {
+      const response = await fetch(`/api/products/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (!response.ok) throw new Error('Failed to delete product')
+
+      // Update the recent products list
+      setRecentProducts(prev => prev.filter(product => product._id !== id))
+
+      toast({
+        title: "Success",
+        description: "Product deleted successfully",
+      })
+    } catch (error) {
+      console.error('Error:', error)
+      toast({
+        title: "Error",
+        description: "Failed to delete product",
+        variant: "destructive",
+      })
+    }
+  }
 
   return (
     <div>
@@ -219,34 +269,22 @@ export default function AdminDashboard() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Product
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Category
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Price
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Min. Order
+                </th> */}
+                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -264,6 +302,9 @@ export default function AdminDashboard() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
@@ -298,6 +339,11 @@ export default function AdminDashboard() {
                         {product.status}
                       </span>
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-500">
+                        {product.minOrder || 'N/A'}
+                      </div>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <Link 
                         href={`/admin/products/${product._id}/edit`} 
@@ -305,7 +351,12 @@ export default function AdminDashboard() {
                       >
                         Edit
                       </Link>
-                      <button className="text-red-600 hover:text-red-900">Delete</button>
+                      <button
+                          onClick={() => handleDelete(product._id)}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          <Trash2 className="h-5 w-5 inline" />
+                        </button>
                     </td>
                   </tr>
                 ))

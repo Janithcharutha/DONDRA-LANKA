@@ -19,6 +19,17 @@ const productSchema = new mongoose.Schema({
   isFeatured: {
     type: Boolean,
     default: false
+  },
+  status: {
+    type: String,
+    enum: ['In Stock', 'Low Stock', 'Out of Stock'],
+    default: 'In Stock',
+    required: true
+  },
+  minOrder: {
+    type: String,
+    required: true,
+    default: '1kg'
   }
 }, {
   timestamps: true

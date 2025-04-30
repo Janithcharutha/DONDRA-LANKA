@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
 import { Upload, X } from "lucide-react"
-import type { Product } from '@/types/product'
+import type { Product, ProductStatus } from '@/types/product'
 
 export default function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
@@ -124,13 +124,60 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
         title: "Success",
         description: "Product updated successfully",
       })
+
+      // Force a cache invalidation and refresh
       router.push('/admin/products')
       router.refresh()
+      
+      // Additional cache clearing
+      await fetch('/api/revalidate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ path: '/admin/products' }),
+      })
+
     } catch (error) {
       console.error('Error updating product:', error)
       toast({
         title: "Error",
         description: "Failed to update product",
+        variant: "destructive",
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newStatus = e.target.value as ProductStatus
+    
+    try {
+      setLoading(true)
+      const response = await fetch(`/api/products/${id}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }),
+      })
+
+      if (!response.ok) throw new Error('Failed to update status')
+
+      toast({
+        title: "Success",
+        description: "Product status updated successfully",
+      })
+
+      // Force refresh of both admin pages
+      router.refresh()
+      router.push('/admin/products')
+    } catch (error) {
+      console.error('Error:', error)
+      toast({
+        title: "Error",
+        description: "Failed to update status",
         variant: "destructive",
       })
     } finally {
@@ -169,61 +216,55 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
             <label className="block mb-2 font-medium">Name</label>
             <Input name="name" defaultValue={product.name} required />
           </div>
+
           <div>
             <label className="block mb-2">Category</label>
             <select 
               name="category" 
-              defaultValue="Dry Fish" 
-              className="w-full p-2 border rounded-md"
+              defaultValue={product.category}
+              className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00957a]"
               required
             >
               <option value="Dry Fish">Dry Fish</option>
-              <option value="Sour Fish Curry">Sour Fish Curry</option>
+              <option value="Fish Ambul Thiyal">Fish Ambul Thiyal</option>
               <option value="Sri Lanka Spices">Sri Lanka Spices</option>
             </select>
           </div>
-          <label className="block mb-2 font-medium">Description</label>
-          <Input 
-            name="description" 
-            defaultValue={product.description} 
-            required 
-          />
+
+
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block mb-2 font-medium">Price</label>
+              <label className="block mb-2 font-medium">Price (Rs.)</label>
               <Input 
                 type="number" 
                 name="price" 
                 defaultValue={product.price} 
-                required 
-              />
-            </div>
-            <div>
-              <label className="block mb-2 font-medium">Stock</label>
-              <Input 
-                type="number" 
-                name="stock" 
-                defaultValue={product.stock} 
+                step="0.01"
+                min="0"
                 required 
               />
             </div>
           </div>
-          <div>
+
+          {/* <div>
             <label className="block mb-2 font-medium">Minimum Order Quantity</label>
             <Input 
               name="minOrder" 
               defaultValue={product.minOrder} 
               placeholder="e.g., 1kg, 500g, 5 pieces"
+              required
             />
             <p className="text-sm text-gray-500 mt-1">
               Specify the minimum quantity that can be ordered
             </p>
-          </div>
+          </div> */}
+
           <div>
             <label className="block mb-2 font-medium">Status</label>
             <select 
               name="status" 
               defaultValue={product.status}
+              onChange={handleStatusChange}
               className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00957a]"
               required
             >
@@ -232,30 +273,43 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
               <option value="Out of Stock">Out of Stock</option>
             </select>
           </div>
+
           <div>
             <label className="block mb-2 font-medium">Images</label>
-            <div className="space-y-2">
+            <div className="grid grid-cols-3 gap-4 mb-4">
               {images.map((image, index) => (
-                <div key={index} className="flex items-center space-x-2">
-                  <img src={image} alt={`Uploaded ${index}`} className="w-16 h-16 object-cover rounded-md" />
-                  <Button 
-                    type="button" 
-                    variant="outline" 
+                <div key={index} className="relative group">
+                  <img 
+                    src={image} 
+                    alt={`Product ${index + 1}`} 
+                    className="w-full h-32 object-cover rounded-lg"
+                  />
+                  <button
+                    type="button"
                     onClick={() => removeImage(index)}
+                    className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                   >
                     <X className="w-4 h-4" />
-                  </Button>
+                  </button>
                 </div>
               ))}
             </div>
+            
             <div className="mt-4">
-              <label className="block mb-2 font-medium">Upload Images</label>
               <input 
                 type="file" 
                 multiple 
-                onChange={handleImageUpload} 
-                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border file:border-gray-300 file:text-sm file:font-medium file:bg-white file:text-gray-700 hover:file:bg-gray-100"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={uploading}
+                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#00957a] file:text-white hover:file:bg-[#007a64]"
               />
+              {uploading && (
+                <div className="mt-2 flex items-center text-sm text-gray-500">
+                  <div className="animate-spin mr-2 h-4 w-4 border-2 border-[#00957a] border-t-transparent rounded-full"></div>
+                  Uploading images...
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -271,7 +325,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
           <Button 
             type="submit"
             className="bg-[#00957a] hover:bg-[#007a64]"
-            disabled={loading}
+            disabled={loading || uploading}
           >
             {loading ? 'Saving...' : 'Save Changes'}
           </Button>
