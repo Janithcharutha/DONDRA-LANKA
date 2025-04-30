@@ -6,14 +6,14 @@ const testimonials = [
     name: "Samantha P.",
     location: "Matara",
     rating: 5,
-    text: "The quality of tuna from DONDRA-LANKA is exceptional. It's always fresh, and the delivery is prompt. I've been a regular customer for over a year now.",
+    text: "The quality of tuna from DONDRA LANKA is exceptional. It's always fresh, and the delivery is prompt. I've been a regular customer for over a year now.",
   },
   {
     id: 2,
     name: "Rajiv M.",
     location: "Kandy",
     rating: 5,
-    text: "I was skeptical about ordering fish online, but DONDRA-LANKA exceeded my expectations. The tuna steaks were perfect for my dinner party!",
+    text: "I was skeptical about ordering fish online, but DONDRA LANKA exceeded my expectations. The tuna steaks were perfect for my dinner party!",
   },
   {
     id: 3,

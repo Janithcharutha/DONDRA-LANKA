@@ -10,7 +10,7 @@ export default function AboutPage() {
         <div>
           <h2 className="text-2xl font-semibold mb-4 text-[#3aaa9e]">Our Story</h2>
           <p className="text-gray-700 mb-4">
-            DONDRA-LANKA was founded with a simple mission: to provide the freshest, highest-quality tuna to customers across
+            DONDRA LANKA was founded with a simple mission: to provide the freshest, highest-quality tuna to customers across
             Sri Lanka. What started as a small family business has grown into a trusted name in seafood delivery.
           </p>
           <p className="text-gray-700">

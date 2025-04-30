@@ -93,23 +93,26 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (!product) return
-
     setLoading(true)
-    const formData = new FormData(e.currentTarget)
-    
-    const productData = {
-      name: formData.get('name'),
-      category: formData.get('category'),
-      price: Number(formData.get('price')),
-      stock: Number(formData.get('stock')),
-      status: formData.get('status'),
-      minOrder: formData.get('minOrder'),
-      description: formData.get('description'),
-      images: images,
-    }
 
     try {
+      const formData = new FormData(e.currentTarget)
+      const productData = {
+        name: formData.get('name'),
+        category: formData.get('category'),
+        price: Number(formData.get('price')),
+        description: formData.get('description'),
+        minOrder: formData.get('minOrder'), // Add this line
+        images: images,
+        status: formData.get('status')
+      }
+
+      // Validate required fields
+      if (!productData.minOrder) {
+        throw new Error('Minimum order quantity is required')
+      }
+
+      const { id } = await params
       const response = await fetch(`/api/products/${id}`, {
         method: 'PUT',
         headers: {
@@ -209,7 +212,6 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
   return (
     <div className="max-w-2xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Edit Product</h1>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="bg-white p-6 rounded-lg shadow-sm space-y-4">
           <div>
@@ -228,6 +230,9 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
               <option value="Dry Fish">Dry Fish</option>
               <option value="Fish Ambul Thiyal">Fish Ambul Thiyal</option>
               <option value="Sri Lanka Spices">Sri Lanka Spices</option>
+              <option value="Other">Other</option>
+
+              
             </select>
           </div>
 
@@ -245,19 +250,19 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
               />
             </div>
           </div>
+          <div>
+  <label className="block mb-2">Minimum Order Quantity</label>
+  <Input 
+    name="minOrder" 
+    defaultValue={product?.minOrder ?? "1KG"}
+    placeholder="e.g. 1kg, 500g, 5 pieces" 
+    required 
+  />
+  <p className="text-sm text-gray-500 mt-1">
+    Specify the minimum quantity that can be ordered
+  </p>
+</div>
 
-          {/* <div>
-            <label className="block mb-2 font-medium">Minimum Order Quantity</label>
-            <Input 
-              name="minOrder" 
-              defaultValue={product.minOrder} 
-              placeholder="e.g., 1kg, 500g, 5 pieces"
-              required
-            />
-            <p className="text-sm text-gray-500 mt-1">
-              Specify the minimum quantity that can be ordered
-            </p>
-          </div> */}
 
           <div>
             <label className="block mb-2 font-medium">Status</label>

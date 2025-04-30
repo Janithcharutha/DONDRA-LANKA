@@ -90,14 +90,18 @@ export default function NewProductPage() {
         name: formData.get('name'),
         category: formData.get('category'),
         price: Number(formData.get('price')),
-        // stock: Number(formData.get('stock')),
         description: formData.get('description'),
         minOrder: formData.get('minOrder'),
         images: images,
-        status: 'In Stock', // Set default status
+        status: 'In Stock'
       }
 
-      console.log('Submitting product data:', productData) // Debug submission data
+      // Validate required fields
+      if (!productData.minOrder) {
+        throw new Error('Minimum order quantity is required')
+      }
+
+      console.log('Submitting product data:', productData)
 
       const response = await fetch('/api/products', {
         method: 'POST',
@@ -149,6 +153,8 @@ export default function NewProductPage() {
             <option value="Dry Fish">Dry Fish</option>
             <option value="Fish Ambul Thiyal">Fish Ambul Thiyal</option>
             <option value="Sri Lanka Spices">Sri Lanka Spices</option>
+            <option value="Maldives Fish">Maldives Fish</option>
+            <option value="Other">Other</option>
           </select>
         </div>
         <div>
@@ -159,14 +165,25 @@ export default function NewProductPage() {
           <label className="block mb-2">Stock</label>
           <Input type="number" name="stock" required />
         </div> */}
-        {/* <div>
+        <div>
           <label className="block mb-2">Description</label>
-          <Input name="description" />
-        </div> */}
-        {/* <div>
-          <label className="block mb-2">Minimum Order Quantity</label>
-          <Input type="number" name="minOrder" />
-        </div> */}
+          <Input name="description" required />
+        </div>
+
+        <div>
+  <label className="block mb-2">Minimum Order Quantity</label>
+  <Input 
+    name="minOrder" 
+    defaultValue="1KG"
+    placeholder="e.g. 1kg, 500g, 5 pieces" 
+    required 
+  />
+  <p className="text-sm text-gray-500 mt-1">
+    Specify the minimum quantity that can be ordered
+  </p>
+</div>
+
+
         <div>
           <label className="block mb-2">Product Images</label>
           <div className="space-y-4">

@@ -194,12 +194,13 @@ export default function ProductDetail({ id }: { id: string }) {
 
             {/* Enhanced Minimum Order Display */}
             <div className="mb-6 mt-6">
-    <h3 className="text-lg font-semibold mb-2">Minimum Order - 2</h3>
-  
-    <p className="text-sm text-gray-500 mt-1">
-      This is the minimum quantity required for ordering
-    </p>
-  </div>
+  <h3 className="text-lg font-semibold mb-2">
+    Minimum Order - {product.minOrder}
+  </h3>
+  <p className="text-sm text-gray-500 mt-1">
+    This is the minimum quantity required for ordering
+  </p>
+</div>
 
             {/* Type Selection */}
             {product.types && product.types.length > 0 && (

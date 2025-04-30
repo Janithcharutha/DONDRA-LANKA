@@ -5,39 +5,16 @@ export default function Footer() {
   return (
     <footer className="bg-[#023E8A] text-white">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
           <div>
             <Link href="/" className="flex items-center gap-2 mb-4">
-              <svg
-                viewBox="0 0 100 100"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-10 h-10 text-white"
-              >
-                <path
-                  d="M80 50C80 50 65 35 50 35C35 35 20 50 20 50C20 50 35 65 50 65C65 65 80 50 80 50Z"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M20 50H10"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M90 40L80 50L90 60"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <circle cx="45" cy="45" r="3" fill="currentColor" stroke="currentColor" strokeWidth="1" />
-              </svg>
-              <span className="font-bold text-xl">DONDRA-LANKA</span>
+            <img
+  src="/logo.png"
+  alt="Dondra Lanka Logo"
+  className="w-10 h-10 object-contain"
+/>
+
+              <span className="font-bold text-xl">DONDRA LANKA</span>
             </Link>
             <p className="text-sm text-white/80 mb-4">
               Providing the freshest tuna and seafood products across Sri Lanka. Convenient, fresh, and sustainable.
@@ -121,6 +98,19 @@ export default function Footer() {
 
             </ul>
           </div>
+          <div>
+  <h3 className="font-semibold text-lg mb-4">Accepted Payment Methods</h3>
+  <img
+    src="/payment.png"
+    alt="Accepted payment methods"
+    className="mb-2 w-full max-w-xs"
+  />
+  <p className="text-sm text-white/80">
+    We ensure secure online payments through trusted gateways. All transactions are encrypted,
+    ensuring your payment details are safe and secure.
+  </p>
+</div>
+
 
           <div>
             <h3 className="font-semibold text-lg mb-4">Contact Us</h3>
@@ -131,13 +121,13 @@ export default function Footer() {
   <p>
     <span className="text-white">Phone: </span>
     <a href="tel:+94705600784" className="text-white hover:underline">
-      +94 70 560 0784
+    +94 78 267 2914
     </a>
     
   </p>
   <p>
     <a href="tel:+94782672914" className="text-white hover:underline">
-    +94 78 267 2914
+    +94 70 560 0784
     </a>
   </p>
 

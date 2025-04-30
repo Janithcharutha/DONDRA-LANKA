@@ -6,6 +6,7 @@ import type { Product } from "@/types/product"
 import HotDeals from "@/components/hot-deals"
 import CategorySlider from "@/components/category-slider"
 import WhatsAppButton from "@/components/whatsapp-button"
+import PriceButton from "@/components/price-button"
 type CategoryProducts = {
   [key: string]: Product[]
 }
@@ -27,7 +28,9 @@ export default function ProductsPage() {
   const [categoryProducts, setCategoryProducts] = useState<CategoryProducts>({
     'Fish Ambul Thiyal': [],
     'SRI LANKA SPICES': [],
-    'DRY FISH': []
+    'DRY FISH': [],
+    'Maldives Fish': [],
+    'Other': []
   })
   const [loading, setLoading] = useState(true)
 
@@ -84,7 +87,7 @@ export default function ProductsPage() {
     <main className="container mx-auto px-4 py-12 max-w-6xl">
       <CategorySlider />
       <WhatsAppButton />
-      <h1 className="text-4xl font-bold text-[#3aaa9e] mb-8 text-center">Our Products</h1>
+      <h1 className="text-4xl font-bold text-[#023E8A] mb-8 text-center">Our Products</h1>
 
       <div className="mb-12">
         <p className="text-gray-700 text-center max-w-3xl mx-auto">
@@ -92,13 +95,15 @@ export default function ProductsPage() {
           products are carefully handled to ensure the highest quality and freshness.
         </p>
       </div>
-       <HotDeals />
-
+      <div className="mb-12">
+      <HotDeals />
+      </div>
+      <PriceButton/>
       {/* Category Sections */}
       {Object.entries(categoryProducts).map(([category, products]) => (
         products.length > 0 && (
           <section key={category} className="mb-16">
-            <h2 className="text-2xl font-bold text-[#3aaa9e] mb-6">{category}</h2>
+            <h2 className="text-2xl font-bold text-[#023E8A] mb-6">{category}</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {/* Show only first 3 products */}
               {products.slice(0, 3).map((product) => (

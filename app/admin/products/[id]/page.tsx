@@ -201,6 +201,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                 <option value="DRY FISH">DRY FISH</option>
                 <option value="Fish Ambul Thiyal">Fish Ambul Thiyal</option>
                 <option value="SRI LANKA SPICES">SRI LANKA SPICES</option>
+                <option value="SRI LANKA SPICES">Maldives Fish</option>
               </select>
             </div>
             <div>

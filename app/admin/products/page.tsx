@@ -169,9 +169,9 @@ export default function ProductsPage() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Status
                     </th>
-                    {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Min. Order
-                    </th> */}
+                    </th>
                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Actions
                     </th>
@@ -219,9 +219,10 @@ export default function ProductsPage() {
                         </span>
                       </td>
                       {/* Min Order column */}
-                      {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {product.minOrder || 'N/A'}
-                      </td> */}
+                      </td>
+
                       {/* Actions column */}
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <Link

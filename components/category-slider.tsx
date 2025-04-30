@@ -6,7 +6,11 @@ const categories = [
   {
     id: "dry-fish",
     name: "DRY FISH",
-    image: "/dryfish.jpg",
+    image: "/dryfish.jpeg",
+  },{
+    id: "maldives-fish",
+    name: "Maldives Fish",
+    image: "/Maldives.jpg",
   },
   {
     id: "fish-ambul-thiyal",
@@ -17,6 +21,11 @@ const categories = [
     id: "sri-lanka-spices",
     name: "SRI LANKA SPICES",
     image: "/spices.jpg",
+  },  
+  {
+    id: "other",
+    name: "Other",
+    image: "/other.jpg",
   }
 ]
 

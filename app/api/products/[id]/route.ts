@@ -81,8 +81,8 @@ export async function PUT(
   context: { params: { id: string } }
 ) {
   try {
-    const id = context.params.id
-    if (!id || !isValidObjectId(id)) {
+    const { id } = context.params
+    if (!isValidObjectId(id)) {
       return NextResponse.json(
         { error: 'Invalid product ID' },
         { status: 400 }
@@ -90,19 +90,23 @@ export async function PUT(
     }
 
     await connectDB()
+    
     const body = await request.json()
-
-    // Ensure images array exists
-    if (!body.images || !Array.isArray(body.images)) {
+    
+    // Validate required fields
+    if (!body.minOrder) {
       return NextResponse.json(
-        { error: 'Images must be an array' },
+        { error: 'Minimum order quantity is required' },
         { status: 400 }
       )
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(
       id,
-      { $set: body },
+      { 
+        ...body,
+        minOrder: body.minOrder // Ensure minOrder is included
+      },
       { new: true, runValidators: true }
     )
 
@@ -117,7 +121,10 @@ export async function PUT(
   } catch (error) {
     console.error('Failed to update product:', error)
     return NextResponse.json(
-      { error: 'Failed to update product' },
+      { 
+        error: 'Failed to update product',
+        details: error instanceof Error ? error.message : undefined
+      },
       { status: 500 }
     )
   }
