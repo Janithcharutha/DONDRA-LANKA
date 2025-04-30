@@ -8,6 +8,8 @@ import { usePathname, useRouter } from "next/navigation"
 import { LayoutDashboard, Package, Tags, Users, Settings, LogOut, Menu, X } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
 import { Newspaper } from "lucide-react";
+import { FaWpforms } from "react-icons/fa"
+
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -82,11 +84,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       href: "/admin/news-banners",
       icon: <Newspaper className="h-5 w-5" />,
     },
-    // {
-    //   name: "Settings",
-    //   href: "/admin/settings",
-    //   icon: <Settings className="h-5 w-5" />,
-    // },
+    {
+      name: "Price List",
+      href: "/admin/price-list",
+      icon: <FaWpforms className="h-5 w-5" />,
+    },
   ]
 
   const handleLogout = () => {

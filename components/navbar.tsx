@@ -26,7 +26,7 @@ export default function Navbar() {
   if (pathname.startsWith("/admin")) return null
 
   return (
-    <header className="bg-[#211C84] text-white sticky top-0 z-50 py-5">
+    <header className="bg-[#023E8A] text-white sticky top-0 z-50 py-5">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-12">
           <Link href="/" className="flex items-center">

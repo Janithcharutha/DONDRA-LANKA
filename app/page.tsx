@@ -9,6 +9,7 @@ import NewsBanners from "@/components/news-banners"
 import Why from "@/components/why"
 import WhatsAppButton from "@/components/whatsapp-button"
 import { Product } from "@/types/product"
+import PriceButton from "@/components/price-button"
 
 export default function Home() {
   return (
@@ -22,6 +23,7 @@ export default function Home() {
       <Why/>
       <TestimonialsSection />
       <ContactCta />
+      <PriceButton/>
       <WhatsAppButton />
     </main>
   )

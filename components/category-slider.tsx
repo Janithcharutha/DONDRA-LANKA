@@ -4,37 +4,20 @@ import Link from "next/link"
 
 const categories = [
   {
+    id: "dry-fish",
+    name: "DRY FISH",
+    image: "/dryfish.jpg",
+  },
+  {
     id: "sour-fish-curry",
-    name: "SOUR FISH CURRY",
-    icon: (
-      <svg viewBox="0 0 100 50" className="w-full h-full">
-        <circle cx="50" cy="25" r="20" stroke="currentColor" strokeWidth="2" fill="none" />
-        <path d="M40 30C45 20 55 20 60 30" stroke="currentColor" strokeWidth="2" fill="none" />
-      </svg>
-    ),
+    name: "Fish Ambul hiyal",
+    image: "/fishcurry.jpg",
   },
   {
     id: "sri-lanka-spices",
     name: "SRI LANKA SPICES",
-    icon: (
-      <svg viewBox="0 0 100 50" className="w-full h-full">
-        <path d="M20 40C25 25 75 25 80 40" stroke="currentColor" strokeWidth="2" fill="none" />
-        <circle cx="30" cy="20" r="2" fill="currentColor" />
-        <circle cx="50" cy="20" r="2" fill="currentColor" />
-        <circle cx="70" cy="20" r="2" fill="currentColor" />
-      </svg>
-    ),
-  },
-  {
-    id: "dry-fish",
-    name: "DRY FISH",
-    icon: (
-      <svg viewBox="0 0 100 50" className="w-full h-full">
-        <rect x="35" y="15" width="30" height="20" stroke="currentColor" strokeWidth="2" fill="none" />
-        <path d="M50 15V35" stroke="currentColor" strokeWidth="2" />
-      </svg>
-    ),
-  },
+    image: "/spices.jpg",
+  }
 ]
 
 export default function CategorySlider() {
@@ -46,10 +29,16 @@ export default function CategorySlider() {
             <Link
               key={category.id}
               href={`/products/category/${category.id}`}
-              className="w-[100px] h-[120px] flex flex-col items-center justify-center border rounded-md p-2 hover:shadow-md transition-shadow"
+              className="w-[120px] h-[160px] flex flex-col items-center justify-center border rounded-md overflow-hidden hover:shadow-md transition-shadow"
             >
-              <div className="w-10 h-10 text-[#00957a]">{category.icon}</div>
-              <span className="text-xs font-medium text-center mt-2">{category.name}</span>
+              {/* Image with small padding, increased size */}
+              <img
+                src={category.image}
+                alt={category.name}
+                className="w-full h-[80%] object-cover rounded-md p-0" // Removed padding around the image and made it cover the space
+              />
+              {/* Text below the image with a small gap */}
+              <span className="text-xs font-medium text-center mt-2">{category.name}</span> {/* Added a small gap with mt-2 */}
             </Link>
           ))}
         </div>

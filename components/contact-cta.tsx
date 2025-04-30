@@ -3,10 +3,10 @@ import { Button } from "@/components/ui/button"
 
 export default function ContactCta() {
   return (
-    <section className="py-16 bg-[#3aaa9e]">
+    <section className="py-16 bg-[#CAF0F8]">
       <div className="container mx-auto px-4 text-center">
-        <h2 className="text-3xl font-bold text-white mb-4">Ready to Order Fresh Tuna?</h2>
-        <p className="text-white/90 max-w-2xl mx-auto mb-8">
+        <h2 className="text-3xl font-bold text-[#023E8A] mb-4">Ready to Order Fresh Tuna?</h2>
+        <p className="text-[#0077B6] max-w-2xl mx-auto mb-8">
           Experience the convenience of having premium quality tuna delivered right to your doorstep. Place your order
           today and taste the difference!
         </p>
