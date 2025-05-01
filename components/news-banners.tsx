@@ -17,15 +17,14 @@ export default function NewsBanners() {
         const response = await fetch('/api/news-banners')
         if (!response.ok) throw new Error('Failed to fetch banners')
         const data = await response.json()
-        
-        // Filter active banners
+
         const activeBanners = data.filter((banner: NewsBanner) => {
           const now = new Date()
           const startDate = new Date(banner.startDate)
           const endDate = new Date(banner.endDate)
           return now >= startDate && now <= endDate && banner.status === 'Active'
         })
-        
+
         setBanners(activeBanners)
       } catch (error) {
         console.error('Error:', error)
@@ -46,10 +45,10 @@ export default function NewsBanners() {
     if (banners.length <= 1) return
 
     const timer = setInterval(() => {
-      setCurrentIndex((current) => 
+      setCurrentIndex((current) =>
         current === banners.length - 1 ? 0 : current + 1
       )
-    }, 2500) // Change slide every 5 seconds
+    }, 2500)
 
     return () => clearInterval(timer)
   }, [banners.length])
@@ -57,11 +56,11 @@ export default function NewsBanners() {
   if (loading || banners.length === 0) return null
 
   return (
-    <div className="relative w-[80%] max-w-4xl h-[400px] mx-auto overflow-hidden">
+    <div className="relative w-full aspect-[16/9] md:aspect-[3/1] max-h-[600px] overflow-hidden">
       {banners.map((banner, index) => (
         <div
           key={banner._id}
-          className={`absolute w-full h-full transition-opacity duration-500 ${
+          className={`absolute inset-0 w-full h-full transition-opacity duration-500 ${
             index === currentIndex ? 'opacity-100' : 'opacity-0'
           }`}
         >
@@ -72,12 +71,12 @@ export default function NewsBanners() {
           />
         </div>
       ))}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
         {banners.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}
-            className={`w-2 h-2 rounded-full transition-colors ${
+            className={`w-3 h-3 rounded-full transition-colors ${
               index === currentIndex ? 'bg-white' : 'bg-white/50'
             }`}
           />
@@ -85,5 +84,4 @@ export default function NewsBanners() {
       </div>
     </div>
   )
-  
 }
