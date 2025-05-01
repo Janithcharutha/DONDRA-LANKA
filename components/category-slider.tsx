@@ -9,12 +9,12 @@ const categories = [
     image: "/dryfish.jpeg",
   },{
     id: "maldives-fish",
-    name: "Maldives Fish",
+    name: "MALDIVES FISH",
     image: "/Maldives.jpg",
   },
   {
     id: "fish-ambul-thiyal",
-    name: "Fish Ambul Thiyal",
+    name: "FISH AMBUL THIYAL",
     image: "/fishcurry.jpg",
   },
   {
@@ -24,7 +24,7 @@ const categories = [
   },  
   {
     id: "other",
-    name: "Other",
+    name: "OTHER",
     image: "/other.jpg",
   }
 ]
