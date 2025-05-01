@@ -3,7 +3,7 @@ export type ProductStatus = 'In Stock' | 'Low Stock' | 'Out of Stock'
 export interface Product {
   _id: string
   name: string
-  description?: string
+  description: string  // Remove the ? to make it required
   category: string
   price: number
   originalPrice?: number
@@ -11,11 +11,8 @@ export interface Product {
   status: ProductStatus
   minOrder: string
   images: string[]
-  // Add new properties
   types?: string[]
-  weightOptions?: string[]
   nutritionalInfo?: string[]
-  storageInstructions?: string
   createdAt?: Date
   updatedAt?: Date
 }

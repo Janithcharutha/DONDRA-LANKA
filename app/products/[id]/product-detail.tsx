@@ -39,6 +39,7 @@ export default function ProductDetail({ id }: { id: string }) {
         const response = await fetch(`/api/products/${id}`)
         if (!response.ok) throw new Error('Failed to fetch product')
         const data = await response.json()
+        console.log('Fetched product data:', data) // Add this line to debug
         setProduct(data)
         setSelectedType(data.types?.[0] ?? '')
         setSelectedWeight(data.weightOptions?.[0] ?? '')
@@ -202,53 +203,19 @@ export default function ProductDetail({ id }: { id: string }) {
   </p>
 </div>
 
-            {/* Type Selection */}
-            {product.types && product.types.length > 0 && (
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-2">Type</h3>
-                <div className="flex flex-wrap gap-2">
-                  {product.types.map((type) => (
-                    <button
-                      key={type}
-                      onClick={() => setSelectedType(type)}
-                      className={`px-4 py-2 rounded-md border ${
-                        selectedType === type
-                          ? "bg-[#00957a] text-white border-[#00957a]"
-                          : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-                      }`}
-                    >
-                      {type}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Weight Selection */}
-            {product.weightOptions && product.weightOptions.length > 0 && (
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold mb-2">Weight</h3>
-                <div className="w-1/3">
-                  <select
-                    value={selectedWeight}
-                    onChange={(e) => setSelectedWeight(e.target.value)}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#00957a]"
-                  >
-                    {product.weightOptions.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            )}
-
             {/* Price */}
             <div className="mt-6">
               <div className="text-3xl font-bold text-gray-800">
                 Rs. {product.price.toFixed(2)}
               </div>
+            </div>
+
+            {/* Description */}
+            <div className="mt-6">
+              <h3 className="text-lg font-semibold mb-2">Description</h3>
+              <p className="text-gray-600 whitespace-pre-line">
+                {product?.description ? product.description : "No description available"}
+              </p>
             </div>
           </div>
         </div>

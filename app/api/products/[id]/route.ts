@@ -4,37 +4,22 @@ import Product from '@/models/Product'
 import { isValidObjectId } from 'mongoose'
 
 export async function GET(
-  request: Request,
-  context: { params: Promise<{ id: string }> }
+  req: Request,
+  { params }: { params: { id: string } }
 ) {
   try {
-    // Await the params
-    const { id } = await context.params
-
-    if (!id || !isValidObjectId(id)) {
-      return NextResponse.json(
-        { error: 'Invalid product ID' },
-        { status: 400 }
-      )
-    }
-
     await connectDB()
-    const product = await Product.findById(id).lean()
-    
+    const product = await Product.findById(params.id)
     if (!product) {
-      return NextResponse.json(
-        { error: 'Product not found' },
-        { status: 404 }
-      )
+      return new Response(JSON.stringify({ error: 'Product not found' }), {
+        status: 404,
+      })
     }
-
-    return NextResponse.json(product)
+    return new Response(JSON.stringify(product), { status: 200 })
   } catch (error) {
-    console.error('Failed to fetch product:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch product' },
-      { status: 500 }
-    )
+    return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
+      status: 500,
+    })
   }
 }
 
@@ -77,38 +62,29 @@ export async function DELETE(
 }
 
 export async function PUT(
-  request: Request,
-  context: { params: { id: string } }
+  req: Request,
+  { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = context.params
-    if (!isValidObjectId(id)) {
-      return NextResponse.json(
-        { error: 'Invalid product ID' },
-        { status: 400 }
-      )
-    }
-
     await connectDB()
     
-    const body = await request.json()
-    
-    // Validate required fields
-    if (!body.minOrder) {
-      return NextResponse.json(
-        { error: 'Minimum order quantity is required' },
-        { status: 400 }
-      )
+    const body = await req.json()
+
+    // Validate description
+    if (!body.description?.trim()) {
+      return NextResponse.json({
+        message: 'Description is required'
+      }, { status: 400 })
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(
-      id,
-      { 
+      params.id,
+      {
         ...body,
-        minOrder: body.minOrder // Ensure minOrder is included
+        description: body.description.trim()
       },
       { new: true, runValidators: true }
-    )
+    ).lean()
 
     if (!updatedProduct) {
       return NextResponse.json(
@@ -121,10 +97,7 @@ export async function PUT(
   } catch (error) {
     console.error('Failed to update product:', error)
     return NextResponse.json(
-      { 
-        error: 'Failed to update product',
-        details: error instanceof Error ? error.message : undefined
-      },
+      { error: 'Failed to update product' },
       { status: 500 }
     )
   }

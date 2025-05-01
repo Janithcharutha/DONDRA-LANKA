@@ -264,6 +264,16 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
   </p>
 </div>
 
+<div>
+  <label className="block mb-2">Description</label>
+  <textarea
+    name="description"
+    defaultValue={product.description}
+    required
+    className="w-full p-2 border rounded-md min-h-[100px]"
+    placeholder="Enter product description"
+  />
+</div>
 
           <div>
             <label className="block mb-2 font-medium">Status</label>

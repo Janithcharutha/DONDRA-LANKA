@@ -30,9 +30,17 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true,
     default: '1kg'
+  },
+  description: {
+    type: String,
+    required: true,
+    trim: true,
+    minLength: [1, 'Description cannot be empty']
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 })
 
 const Product = mongoose.models.Product || mongoose.model('Product', productSchema)

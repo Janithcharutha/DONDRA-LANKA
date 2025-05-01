@@ -229,25 +229,6 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                 onChange={handleInputChange}
               />
             </div>
-            {/* <div>
-              <label htmlFor="stock" className="block text-sm font-medium text-gray-700 mb-1">
-                Stock Quantity
-              </label>
-              <Input
-                id="stock"
-                name="stock"
-                type="number"
-                value={product?.stock || ""}
-                onChange={handleInputChange}
-                required
-              />
-            </div> */}
-            {/* <div>
-              <label htmlFor="minOrder" className="block text-sm font-medium text-gray-700 mb-1">
-                Minimum Order
-              </label>
-              <Input id="minOrder" name="minOrder" value={product?.minOrder || ""} onChange={handleInputChange} required />
-            </div> */}
           </div>
         </div>
 
@@ -304,119 +285,10 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                 required
               />
             </div>
-            <div>
-              <label htmlFor="storageInstructions" className="block text-sm font-medium text-gray-700 mb-1">
-                Storage Instructions
-              </label>
-              <Textarea
-                id="storageInstructions"
-                name="storageInstructions"
-                value={product?.storageInstructions || ""}
-                onChange={handleInputChange}
-                rows={3}
-              />
-            </div>
+            
           </div>
         </div>
-
-        {/* Nutritional Information */}
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Nutritional Information</h2>
-          <div className="space-y-4">
-            <div>
-              <div className="flex items-center mb-2">
-                <Input
-                  value={newNutritionalInfo}
-                  onChange={(e) => setNewNutritionalInfo(e.target.value)}
-                  placeholder="Add nutritional information"
-                  className="mr-2"
-                />
-                <Button type="button" onClick={addNutritionalInfo} className="bg-[#00957a] hover:bg-[#007a64]">
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-              <ul className="space-y-2">
-                {nutritionalInfo.map((info, index) => (
-                  <li key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded">
-                    <span>{info}</span>
-                    <button
-                      type="button"
-                      onClick={() => removeNutritionalInfo(index)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      <Trash className="h-4 w-4" />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        {/* Product Variants */}
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Product Variants</h2>
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-md font-medium text-gray-700 mb-2">Types</h3>
-              <div className="flex items-center mb-2">
-                <Input
-                  value={newType}
-                  onChange={(e) => setNewType(e.target.value)}
-                  placeholder="Add product type"
-                  className="mr-2"
-                />
-                <Button type="button" onClick={addType} className="bg-[#00957a] hover:bg-[#007a64]">
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {types.map((type, index) => (
-                  <div key={index} className="bg-gray-50 px-3 py-1 rounded-full flex items-center">
-                    <span>{type}</span>
-                    <button
-                      type="button"
-                      onClick={() => removeType(index)}
-                      className="ml-2 text-red-500 hover:text-red-700"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div>
-              <h3 className="text-md font-medium text-gray-700 mb-2">Weight Options</h3>
-              <div className="flex items-center mb-2">
-                <Input
-                  value={newWeight}
-                  onChange={(e) => setNewWeight(e.target.value)}
-                  placeholder="Add weight option"
-                  className="mr-2"
-                />
-                <Button type="button" onClick={addWeight} className="bg-[#00957a] hover:bg-[#007a64]">
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {weightOptions.map((weight, index) => (
-                  <div key={index} className="bg-gray-50 px-3 py-1 rounded-full flex items-center">
-                    <span>{weight}</span>
-                    <button
-                      type="button"
-                      onClick={() => removeWeight(index)}
-                      className="ml-2 text-red-500 hover:text-red-700"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Form Actions */}
+    {/* Form Actions */}
         <div className="flex justify-end space-x-4">
           <Link href="/admin/products">
             <Button type="button" variant="outline" className="border-gray-300 text-gray-700">

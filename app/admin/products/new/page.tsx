@@ -86,22 +86,24 @@ export default function NewProductPage() {
 
     try {
       const formData = new FormData(e.currentTarget)
+      const description = formData.get('description')
+      
+      // Add validation for description
+      if (!description || description.toString().trim() === '') {
+        throw new Error('Description is required')
+      }
+
       const productData = {
         name: formData.get('name'),
         category: formData.get('category'),
         price: Number(formData.get('price')),
-        description: formData.get('description'),
+        description: description,
         minOrder: formData.get('minOrder'),
         images: images,
         status: 'In Stock'
       }
 
-      // Validate required fields
-      if (!productData.minOrder) {
-        throw new Error('Minimum order quantity is required')
-      }
-
-      console.log('Submitting product data:', productData)
+      console.log('Submitting product data:', productData) // Debug log
 
       const response = await fetch('/api/products', {
         method: 'POST',
@@ -111,9 +113,11 @@ export default function NewProductPage() {
         body: JSON.stringify(productData),
       })
 
+      const responseData = await response.json()
+      console.log('Server response:', responseData) // Debug log
+
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.message || 'Failed to create product')
+        throw new Error(responseData.message || 'Failed to create product')
       }
 
       toast({
@@ -162,23 +166,24 @@ export default function NewProductPage() {
           <label className="block mb-2">Price</label>
           <Input type="number" name="price" required />
         </div>
-        {/* <div>
-          <label className="block mb-2">Stock</label>
-          <Input type="number" name="stock" required />
-        </div> */}
         <div>
           <label className="block mb-2">Description</label>
-          <Input name="description" required />
+          <textarea
+            name="description"
+            required
+            className="w-full p-2 border rounded-md min-h-[100px]"
+            placeholder="Enter product description"
+          />
         </div>
 
         <div>
-  <label className="block mb-2">Minimum Order Quantity</label>
-  <Input 
-    name="minOrder" 
-    defaultValue="1KG"
-    placeholder="e.g. 1kg, 500g, 5 pieces" 
-    required 
-  />
+           <label className="block mb-2">Minimum Order Quantity</label>
+           <Input 
+             name="minOrder" 
+             defaultValue="1KG"
+             placeholder="e.g. 1kg, 500g, 5 pieces" 
+             required 
+            />
   <p className="text-sm text-gray-500 mt-1">
     Specify the minimum quantity that can be ordered
   </p>
