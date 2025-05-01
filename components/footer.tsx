@@ -17,7 +17,7 @@ export default function Footer() {
               <span className="font-bold text-xl">DONDRA LANKA</span>
             </Link>
             <p className="text-sm text-white/80 mb-4">
-              Providing the freshest tuna and seafood products across Sri Lanka. Convenient, fresh, and sustainable.
+              Premium dry fish, rich Sri Lankan spices, and authentic Fish Ambul Thiyal — hygienic, sustainable, and delivered worldwide at an affordable price.
             </p>
             <div className="flex gap-4">
               <a href="https://www.facebook.com/dondralanka" className="text-white hover:text-white/80">
@@ -82,6 +82,16 @@ export default function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link href="/products" className="text-white/80 hover:text-white">
+                Dry Fish
+                </Link>
+              </li>
+              <li>
+                <Link href="/products" className="text-white/80 hover:text-white">
+                Maldives Fish
+                </Link>
+              </li>
+              <li>
+                <Link href="/products" className="text-white/80 hover:text-white">
                 Fish Ambul Thiyal
                 </Link>
               </li>
@@ -90,21 +100,17 @@ export default function Footer() {
                 SRI LANKA SPICES
                 </Link>
               </li>
-              <li>
-                <Link href="/products" className="text-white/80 hover:text-white">
-                DRY FISH
-                </Link>
-              </li>
 
             </ul>
           </div>
           <div>
   <h3 className="font-semibold text-lg mb-4">Accepted Payment Methods</h3>
   <img
-    src="/payment.png"
-    alt="Accepted payment methods"
-    className="mb-2 w-full max-w-xs"
-  />
+  src="/payment.png"
+  alt="Accepted payment methods"
+  className="mb-2 w-full max-w-xs border border-white"
+/>
+
   <p className="text-sm text-white/80">
     We ensure secure online payments through trusted gateways. All transactions are encrypted,
     ensuring your payment details are safe and secure.
@@ -141,7 +147,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-white/20 mt-8 pt-8 text-center text-white/80 text-sm">
-          <p>&copy; {new Date().getFullYear()} DONDRA-LANKA. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} DONDRA LANKA. All rights reserved.</p>
           <div className="mt-2 flex justify-center gap-4">
             <Link href="/privacy-policy" className="hover:text-white">
               Privacy Policy

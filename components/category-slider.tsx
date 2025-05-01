@@ -21,6 +21,11 @@ const categories = [
     id: "sri-lanka-spices",
     name: "SRI LANKA SPICES",
     image: "/spices.jpg",
+  },
+  {
+    id: "Sea-foods",
+    name: "SEA FOODS",
+    image: "/seafood.jpg",
   },  
   {
     id: "other",

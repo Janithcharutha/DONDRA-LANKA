@@ -30,6 +30,7 @@ export default function ProductsPage() {
     'SRI LANKA SPICES': [],
     'DRY FISH': [],
     'Maldives Fish': [],
+    'Sea Foods': [],
     'Other': []
   })
   const [loading, setLoading] = useState(true)
@@ -91,8 +92,7 @@ export default function ProductsPage() {
 
       <div className="mb-12">
         <p className="text-gray-700 text-center max-w-3xl mx-auto">
-          Discover our range of premium tuna products, sourced sustainably and delivered fresh to your doorstep. All our
-          products are carefully handled to ensure the highest quality and freshness.
+        Discover our range of premium-quality dry fish products, sustainably sourced and delivered worldwide. All our products are carefully handled to ensure the highest hygienic standards and quality.
         </p>
       </div>
       <div className="mb-12">

@@ -154,6 +154,7 @@ export default function NewProductPage() {
             <option value="Fish Ambul Thiyal">Fish Ambul Thiyal</option>
             <option value="Sri Lanka Spices">Sri Lanka Spices</option>
             <option value="Maldives Fish">Maldives Fish</option>
+            <option value="Sea Foods">SEA FOODS</option>
             <option value="Other">Other</option>
           </select>
         </div>

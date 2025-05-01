@@ -12,7 +12,7 @@ export default function Hero() {
             Authentic Sri Lankan Flavors at Your Doorstep
           </h1>
           <p className="text-lg text-[#023E8A] mb-8 max-w-lg mx-auto md:mx-0">
-            Discover premium dry fish, rich Sri Lankan spices, and delicious Fish Ambul Thiyal, all sustainably sourced and conveniently delivered across Sri Lanka.
+          Discover premium-quality dried fish, seafood, and hygienic food products — all sustainably sourced, carefully prepared, and delivered worldwide at affordable prices.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">

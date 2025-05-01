@@ -73,7 +73,7 @@ export default function FeaturedProducts() {
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-[#3aaa9e] mb-4">Featured Products</h2>
           <p className="text-gray-700 max-w-2xl mx-auto">
-            Explore our collection of premium Sri Lankan spices and products
+            Explore our collection of premium-quality dried fish, seafoods, and hygienic food products
           </p>
         </div>
 

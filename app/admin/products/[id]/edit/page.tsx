@@ -230,6 +230,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
               <option value="Dry Fish">Dry Fish</option>
               <option value="Fish Ambul Thiyal">Fish Ambul Thiyal</option>
               <option value="Sri Lanka Spices">Sri Lanka Spices</option>
+              <option value="Sea Foods">SEA FOODS</option>
               <option value="Other">Other</option>
 
               
