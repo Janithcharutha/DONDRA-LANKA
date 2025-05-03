@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -14,6 +14,27 @@ export default function NewProductPage() {
   const [images, setImages] = useState<string[]>([])
   const [uploading, setUploading] = useState(false)
   const [imageError, setImageError] = useState<string | null>(null)
+  const [categories, setCategories] = useState<Array<{ _id: string, name: string }>>([])
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/api/categories')
+        if (!response.ok) throw new Error('Failed to fetch categories')
+        const data = await response.json()
+        setCategories(data)
+      } catch (error) {
+        console.error('Error fetching categories:', error)
+        toast({
+          title: "Error",
+          description: "Failed to load categories",
+          variant: "destructive",
+        })
+      }
+    }
+
+    fetchCategories()
+  }, [toast])
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.length) return
@@ -150,16 +171,15 @@ export default function NewProductPage() {
           <label className="block mb-2">Category</label>
           <select 
             name="category" 
-            defaultValue="Dry Fish" 
+            defaultValue={categories[0]?.name} 
             className="w-full p-2 border rounded-md"
             required
           >
-            <option value="Dry Fish">Dry Fish</option>
-            <option value="Fish Ambul Thiyal">Fish Ambul Thiyal</option>
-            <option value="Sri Lanka Spices">Sri Lanka Spices</option>
-            <option value="Maldives Fish">Maldives Fish</option>
-            <option value="Sea Foods">SEA FOODS</option>
-            <option value="Other">Other</option>
+            {categories.map((category) => (
+              <option key={category._id} value={category.name}>
+                {category.name}
+              </option>
+            ))}
           </select>
         </div>
         <div>

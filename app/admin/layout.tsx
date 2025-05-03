@@ -70,6 +70,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       icon: <LayoutDashboard className="h-5 w-5" />,
     },
     {
+      name: "Categorys",
+      href: "/admin/categories",
+      icon: <Tags className="h-5 w-5" />, 
+    },
+    {
       name: "Products",
       href: "/admin/products",
       icon: <Package className="h-5 w-5" />,
@@ -89,6 +94,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       href: "/admin/price-list",
       icon: <FaWpforms className="h-5 w-5" />,
     },
+  
   ]
 
   const handleLogout = () => {

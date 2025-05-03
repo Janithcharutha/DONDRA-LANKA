@@ -17,6 +17,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
   const [product, setProduct] = useState<Product | null>(null)
   const [uploading, setUploading] = useState(false)
   const [images, setImages] = useState<string[]>([])
+  const [categories, setCategories] = useState<Array<{ _id: string, name: string }>>([])
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -43,6 +44,26 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
       fetchProduct()
     }
   }, [id, toast])
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/api/categories')
+        if (!response.ok) throw new Error('Failed to fetch categories')
+        const data = await response.json()
+        setCategories(data)
+      } catch (error) {
+        console.error('Error fetching categories:', error)
+        toast({
+          title: "Error",
+          description: "Failed to load categories",
+          variant: "destructive",
+        })
+      }
+    }
+
+    fetchCategories()
+  }, [toast])
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.length) return
@@ -227,16 +248,13 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
               className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00957a]"
               required
             >
-              <option value="Dry Fish">Dry Fish</option>
-              <option value="Fish Ambul Thiyal">Fish Ambul Thiyal</option>
-              <option value="Sri Lanka Spices">Sri Lanka Spices</option>
-              <option value="Sea Foods">SEA FOODS</option>
-              <option value="Other">Other</option>
-
-              
+              {categories.map((category) => (
+                <option key={category._id} value={category.name}>
+                  {category.name}
+                </option>
+              ))}
             </select>
           </div>
-
 
           <div className="grid grid-cols-2 gap-4">
             <div>
