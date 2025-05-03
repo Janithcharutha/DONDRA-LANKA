@@ -95,12 +95,29 @@ export default function CategoriesPage() {
       return
     }
 
+    setLoading(true) // Add loading state while submitting
+
     try {
-      const formData = new FormData(e.currentTarget)
+      const form = e.currentTarget
+      const formData = new FormData(form)
+      const name = formData.get('name') as string
+
+      // Validate name
+      if (!name || name.trim() === '') {
+        toast({
+          title: "Error",
+          description: "Category name is required",
+          variant: "destructive",
+        })
+        return
+      }
+
       const categoryData = {
-        name: formData.get('name'),
+        name: name.trim(),
         image: imageUrl
       }
+
+      console.log('Submitting category data:', categoryData) // Debug log
 
       const response = await fetch('/api/categories', {
         method: 'POST',
@@ -110,22 +127,31 @@ export default function CategoriesPage() {
         body: JSON.stringify(categoryData),
       })
 
-      if (!response.ok) throw new Error('Failed to create category')
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.message || 'Failed to create category')
+      }
+
+      // Reset form and state
+      form.reset()
+      setImageUrl('')
+      
+      // Refresh categories list
+      await fetchCategories()
 
       toast({
         title: "Success",
         description: "Category created successfully",
       })
-      
-      fetchCategories()
-      e.currentTarget.reset()
-      setImageUrl('')
     } catch (error) {
+      console.error('Category creation error:', error) // Debug log
       toast({
         title: "Error",
-        description: "Failed to create category",
+        description: error instanceof Error ? error.message : 'Failed to create category',
         variant: "destructive",
       })
+    } finally {
+      setLoading(false) // Reset loading state
     }
   }
 
@@ -151,14 +177,17 @@ export default function CategoriesPage() {
 
       if (!response.ok) throw new Error('Failed to update category')
 
+      // Reset states and close dialog
+      setEditingCategory(null) // This will close the dialog
+      setImageUrl('') // Reset image URL
+      
+      // Refresh the categories list
+      await fetchCategories()
+
       toast({
         title: "Success",
         description: "Category updated successfully",
       })
-      
-      fetchCategories()
-      setEditingCategory(null)
-      setImageUrl('')
     } catch (error) {
       toast({
         title: "Error",
@@ -227,12 +256,12 @@ export default function CategoriesPage() {
         </div>
 
         <Button 
-          type="submit"
-          disabled={uploading}
-          className="bg-[#00957a] hover:bg-[#007a64]"
-        >
-          {uploading ? 'Uploading...' : 'Create Category'}
-        </Button>
+  type="submit"
+  disabled={uploading || loading} // Disable during both upload and form submission
+  className="bg-[#00957a] hover:bg-[#007a64] text-white"
+>
+  {uploading ? 'Uploading...' : loading ? 'Creating...' : 'Create Category'}
+</Button>
       </form>
 
       <div className="grid grid-cols-3 gap-4">
@@ -249,17 +278,23 @@ export default function CategoriesPage() {
             <div className="flex items-center justify-between">
               <h3 className="font-semibold">{category.name}</h3>
               <div className="flex gap-2">
-                <Dialog>
+                <Dialog 
+                  open={editingCategory?._id === category._id}
+                  onOpenChange={(open) => {
+                    if (!open) setEditingCategory(null);
+                    else setEditingCategory(category);
+                  }}
+                >
                   <DialogTrigger asChild>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setEditingCategory(category)}
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
                   </DialogTrigger>
-                  <DialogContent>
+
+                  <DialogContent className="bg-white border shadow-lg">
                     <DialogHeader>
                       <DialogTitle>Edit Category</DialogTitle>
                     </DialogHeader>
